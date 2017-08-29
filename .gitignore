@@ -1,0 +1,7 @@
+.env
+__pycache__
+
+config.py
+
+.*.swo
+.*.swp
