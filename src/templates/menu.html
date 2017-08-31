@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel='stylesheet' type='text/css' href='/static/css/base.css'>
+        <meta content='width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no' name='viewport'>
+        {% block header %}
+        {% endblock %}
+    </head>
+    <body>
+        <div id='top_menu'>
+            <ul>
+            {% block menu %}
+            {% endblock %}
+            </ul>
+        </div>
+        <div id='content'>
+            {% if error|exists and error != "" %}
+                <div class="error">
+                    <h4>{{error}}</h4>
+                </div>
+            {% endif %}
+            {% if success|exists and success != "" %}
+                <div class="success">
+                    <h4>{{success}}</h4>
+                </div>
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
