@@ -17,11 +17,16 @@
 from .session import EncryptedSession
 from .headers import SecureHeader
 from .db import ConfigDB
+from .utils import ConfigUtils
+from . import log
 
 session = None
 def InitializeLib(app):
     global session
+
     SecureHeader(app)
+    ConfigUtils(app)
+    log.ConfigLog(app)
     session = EncryptedSession(
         app,
         log,

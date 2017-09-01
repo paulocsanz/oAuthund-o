@@ -3,7 +3,7 @@ from .. import app
 from .authorization import Authorization
 
 class RequestAccess:
-    def __init__(self, client_id, code = None
+    def __init__(self, client_id, code = None,
                  access_token = None, valid = True):
         self.client_id = client_id
         self.code = code or random_string(app.config["AUTH_CODE_LENGTH"])

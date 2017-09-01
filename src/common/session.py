@@ -170,4 +170,3 @@ class EncryptedSession(dict):
         ret = g._decrypted_session.update(**other)
         self._reencrypt_if_changed()
         return ret
-

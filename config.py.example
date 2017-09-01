@@ -1,0 +1,26 @@
+class Config:
+    DEBUG = True
+
+    HOST = "localhost"
+    PORT = 3000
+
+    MYSQL_HOST = "localhost"
+    MYSQL_DB = "cataboard"
+    MYSQL_USER = ""
+    MYSQL_PASSWORD = ""
+
+    # Tokens (cookies) encryption/sign key - empty not accepted in production
+    # If leaked, reset it and restart the server to prevent unauthorized actions
+
+    ### RUN `bash dependencies/random_base64.sh` and copy the result printed ###
+    ### IF NOT AT LEAST MAKE IT 50 RANDOM CHARACTERS (YOU DON'T NEED TO KNOW THE PASSWORD) ###
+    SECRET_KEY = ""
+    MAX_CONTENT_LENGTH = 1024 * 1024 * 16 # 16MB
+
+    # Example 2017-07-19 13:20:30
+    # Change it as appropriate
+    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+    # In seconds
+    SESSION_EXPIRATION = 60 * 60 * 24
+    SESSION_RENEW_WHEN_MISSING = 60 * 60 * 3

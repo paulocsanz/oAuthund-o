@@ -1,4 +1,6 @@
-flask
+Flask
+Flask-MySQLdb
 gunicorn
 gevent
 cryptography
+requests

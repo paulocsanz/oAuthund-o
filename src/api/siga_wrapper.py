@@ -19,6 +19,7 @@ def login(username, password):
             "JSESSIONID": JSESSIONID
         }
     )
+    print(req_post)
     try:
         return req_post.cookies["gnosys-token"]
     except KeyError:

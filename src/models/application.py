@@ -1,5 +1,6 @@
 from ..common.utils import random_string
 from .. import app
+from . import DB
 
 class Application:
     def __init__(self, name, description, redirect_uri, id=None, client_id=None):
@@ -7,7 +8,7 @@ class Application:
         self.name = name
         self.description = description
         self.redirect_uri = redirect_uri
-        self.client_id = client_id or random_string(app.config["CLIENT_ID_LENGTH")
+        self.client_id = client_id or random_string(app.config["CLIENT_ID_LENGTH"])
 
     def save(self):
         with DB() as db:
@@ -26,4 +27,4 @@ class Application:
                 "SELECT name, description, redirect_uri, id, client_id "
                 "FROM applications "
                 "WHERE client_id = %s",
-                client_id)
+                client_id))
