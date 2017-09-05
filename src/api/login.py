@@ -1,4 +1,3 @@
-from ..common.errors import UserNotFound
 from .siga_wrapper import login as _login
 
 def login(username, password, client_id):

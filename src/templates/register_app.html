@@ -1,0 +1,13 @@
+{% extends 'menu.html' %}
+
+{% block content %}
+<form method="POST">
+	<h4>Nome (*)</h4>
+	<input type="text" name="name" />
+	<h4>Descrição</h4>
+	<input type="text" name="description" />
+	<h4>URI de redirecionamento - protocolo OAuth2 (*)</h4>
+	<input type="text" name="redirect_uri" />
+	<input type="submit" value="Cadastrar" />
+</form>
+{% endblock %}

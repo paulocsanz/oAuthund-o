@@ -1,49 +1,43 @@
 from flask import request, render_template, redirect, url_for
 from datetime import datetime
-from ..common.errors import CRSFDetected
+from ..common.auth import is_auth, login_required
+from ..common.errors import CRSFDetected, NoResult, MissingRequiredFields, NotAuthenticated
 from ..common.utils import random_string, add_arg
 from .. import api, app, session
 
+@app.route('/')
+def home():
+    return redirect(url_for('login'))
+
 @app.route('/login')
 def authenticate():
-    state = request.args.get("state")
-    client_id = request.args.get("client_id")
+    state = request.args.get("state") or ""
+    client_id = request.args.get("client_id") or ""
 
-    #client = api.get_client(client_id)
-    return render_template("login.html",
-                           state=state)
-                           #client=client)
+    if client_id == "":
+        raise MissingRequiredFields()
 
-def authorize():
-    state = request.args.get("state")
-    client_id = request.args.get("client_id")
+    try:
+        is_auth()
+        kwrags = {"client_id": client_id}
+        if state != "":
+            kwargs["state"] = state
+        return redirect(url_for("authorize", **kwargs))
+    except NotAuthenticated:
+        pass
 
-    username = session.get("username") or ""
-    expiration = session.get("expiration") or ""
-    if "" in [username, expiration] or expiration > datetime.now():
-        return authenticate()
+    try:
+        if client_id is None:
+            raise NoResult
 
-    authorization = api.get_authorization(cliend_id, username)
-    if authorization is not None:
-        redirect_uri = add_arg(redirect_uri,
-                               code=code,
-                               state=state) 
-        return redirect(redirect_uri)
-    else:
         client = api.get_client(client_id)
-        user = api.get_user(session['username'])
-        return render_template('authorize', client=client, user=user)
+    except NoResult:
+        client = None
 
-@app.route('/authorize')
-def handle_authorization():
-    response_type = request.args.get("response_type")
-    if response_type == "code":
-        raise ProtocolError()
-
-    if (request.args.get("code") or "") == "":
-        return authenticate()
-    else:
-        return authorize()
+    kwrags = {"client": client}
+    if state != "":
+        kwargs["state"] = state
+    return render_template("login.html", **kwargs)
 
 @app.route('/login', methods=["POST"])
 def login():
@@ -52,13 +46,65 @@ def login():
     password = request.form.get("password")
 
     code = api.login(username, password)
+    session["code"] = code
     session["username"] = username
     session["expire"] = app.config["SESSION_EXPIRATION"]
     
     kwargs = {"code": code}
     if state is not None:
         kwargs["state"] = state
-    return redirect(url_for("handle_authorization", **kwargs))
+    return redirect(url_for("authorize", **kwargs))
+
+@app.route('/authorize')
+@login_required
+def authorize():
+    # Let's ignore response_type, since this endpoint only does this
+    state = request.args.get("state") or ""
+    client_id = request.args.get("client_id") or ""
+    code = session.get("code") or ""
+
+    if client_id != "":
+        client = api.get_client(client_id)
+    else:
+        raise MissingRequiredFields()
+
+    try:
+        authorization = api.get_authorization(client_id, username)
+        kwargs = {"code": authorization.code}
+        if state != "":
+            kwargs["state"] = state
+        return redirect(add_arg(client.redirect_uri, **kwargs))
+    except NoResult:
+        pass
+
+    user = api.get_user(session['username'])
+    return render_template('authorize.html',
+                           code=code,
+                           client=client,
+                           user=user)
+
+@app.route('/authorize', methods=["POST"])
+def authorize_post():
+    return redirect(url_for("login"))
+
+@app.route('/register/app')
+def register_app():
+    return render_template("register_app.html")
+
+@app.route('/register/app', methods=["POST"])
+def register_app_post():
+    name = request.form.get("name") or ""
+    description = request.form.get("description") or ""
+    redirect_uri = request.form.get("redirect_uri") or ""
+    if "" in [name, redirect_uri]:
+        raise MissingRequiredFields()
+    client_id = api.register_app(name, description, redirect_uri)
+    return redirect(url_for('application', client_id=client_id))
+
+@app.route('/app/<client_id>')
+def application(client_id):
+    # TODO
+    return redirect(url_for("login"))
 
 @app.route('/grant', methods=["POST"])
 def grant():

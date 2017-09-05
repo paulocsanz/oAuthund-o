@@ -1,6 +1,6 @@
 from .common import InitializeLib
 from .common.db import DB
-from .config import Config
+from ..config import Config
 from flask import Flask
 
 app = Flask(__name__)

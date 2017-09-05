@@ -4,3 +4,4 @@ gunicorn
 gevent
 cryptography
 requests
+pexpect

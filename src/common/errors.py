@@ -1,3 +1,9 @@
+class NotAuthenticated(Exception):
+    pass
+
+class MissingRequiredFields(Exception):
+    pass
+
 class UserNotFound(Exception):
     pass
 

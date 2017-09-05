@@ -1,3 +1,5 @@
+from werkzeug.errors import ServerError
+from ..common.errors import UserNotFound
 from requests import get, post
 
 def login(username, password):
@@ -19,8 +21,7 @@ def login(username, password):
             "JSESSIONID": JSESSIONID
         }
     )
-    print(req_post)
     try:
         return req_post.cookies["gnosys-token"]
     except KeyError:
-        raise UserNotfound()
+        raise UserNotFound()

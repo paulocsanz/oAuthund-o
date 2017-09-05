@@ -5,9 +5,11 @@ class Config:
     PORT = 3000
 
     MYSQL_HOST = "localhost"
-    MYSQL_DB = "cataboard"
+    MYSQL_DB = "sigalogado"
     MYSQL_USER = ""
     MYSQL_PASSWORD = ""
+
+    LOG_FILE = None
 
     # Tokens (cookies) encryption/sign key - empty not accepted in production
     # If leaked, reset it and restart the server to prevent unauthorized actions
@@ -24,3 +26,5 @@ class Config:
     # In seconds
     SESSION_EXPIRATION = 60 * 60 * 24
     SESSION_RENEW_WHEN_MISSING = 60 * 60 * 3
+
+	CLIENT_ID_LENGTH = 18

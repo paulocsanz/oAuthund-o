@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+chmod +x run
+env FLASK_APP=src/__init__.py flask run
