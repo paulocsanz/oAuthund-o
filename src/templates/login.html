@@ -5,6 +5,9 @@
 	<input type="text" name="username" />
 	<input type="password" name="password" />
 	<input type="hidden" name="state" value="{{state}}">
+	{% if client_id %}
+		<input type="hidden" name="client_id" value="{{client.id}}">
+	{% endif %}
 	<input type="submit" value="Entrar" />
 </form>
 {% endblock %}

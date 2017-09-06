@@ -6,52 +6,75 @@ from ..common.utils import random_string, add_arg
 from .. import api, app, session
 
 @app.route('/')
+@login_required
 def home():
-    return redirect(url_for('login'))
+    user = api.get_user(session)
+    return render_template('profile.html',
+                           user=user)
 
 @app.route('/login')
 def authenticate():
     state = request.args.get("state") or ""
     client_id = request.args.get("client_id") or ""
 
-    if client_id == "":
-        raise MissingRequiredFields()
-
     try:
         is_auth()
-        kwrags = {"client_id": client_id}
-        if state != "":
-            kwargs["state"] = state
-        return redirect(url_for("authorize", **kwargs))
+        if client_id != "":
+            kwargs = {"client_id": client_id}
+            if state != "":
+                kwargs["state"] = state
+            return redirect(url_for("authorize", **kwargs))
+        else:
+            return redirect(url_for("home"))
     except NotAuthenticated:
         pass
 
     try:
-        if client_id is None:
-            raise NoResult
+        if client_id == "":
+            raise NoResult()
 
         client = api.get_client(client_id)
     except NoResult:
         client = None
 
-    kwrags = {"client": client}
+    kwargs = {"client": client}
     if state != "":
         kwargs["state"] = state
     return render_template("login.html", **kwargs)
 
 @app.route('/login', methods=["POST"])
 def login():
-    state = request.form.get("state")
-    username = request.form.get("username")
-    password = request.form.get("password")
+    try:
+        is_auth()
+        if client_id != "":
+            kwargs = {"client_id": client_id}
+            if state != "":
+                kwargs["state"] = state
+            return redirect(url_for("authorize", **kwargs))
+        else:
+            return redirect(url_for("home"))
+    except NotAuthenticated:
+        pass
+
+    state = request.form.get("state") or ""
+    client_id = request.form.get("client_id") or ""
+    username = request.form.get("username") or ""
+    password = request.form.get("password") or ""
+
+    if "" in [username, password]:
+        raise MissingRequiredFields()
 
     code = api.login(username, password)
     session["code"] = code
     session["username"] = username
-    session["expire"] = app.config["SESSION_EXPIRATION"]
+    session["expiration"] = app.config["SESSION_EXPIRATION"]
     
-    kwargs = {"code": code}
-    if state is not None:
+    if client_id == "":
+        return redirect(url_for("home"))
+
+    kwargs = {"code": code,
+              "client_id": client_id}
+    if state != "":
         kwargs["state"] = state
     return redirect(url_for("authorize", **kwargs))
 
@@ -77,7 +100,7 @@ def authorize():
     except NoResult:
         pass
 
-    user = api.get_user(session['username'])
+    user = api.get_user(session)
     return render_template('authorize.html',
                            code=code,
                            client=client,
@@ -88,10 +111,12 @@ def authorize_post():
     return redirect(url_for("login"))
 
 @app.route('/register/app')
+@login_required
 def register_app():
     return render_template("register_app.html")
 
 @app.route('/register/app', methods=["POST"])
+@login_required
 def register_app_post():
     name = request.form.get("name") or ""
     description = request.form.get("description") or ""

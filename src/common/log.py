@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
+import json as _json
 from traceback import format_exception
 from sys import exc_info
 from multiprocessing import Process, Queue
@@ -77,7 +77,7 @@ def error(err, label=None):
     _output(_type, msg)
 
 def json(msg, _dict):
-    _output("JSON", msg, json.dumps(_dict))
+    _output("JSON", msg, _json.dumps(_dict))
 
 def fatal(*msg):
     _output("FATAL", msg)

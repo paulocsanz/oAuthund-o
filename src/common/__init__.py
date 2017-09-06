@@ -27,6 +27,7 @@ def InitializeLib(app):
     SecureHeader(app)
     ConfigUtils(app)
     log.ConfigLog(app)
+    app.config['log'] = log
     session = EncryptedSession(
         app,
         log,

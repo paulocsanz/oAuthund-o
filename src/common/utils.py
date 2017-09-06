@@ -17,6 +17,15 @@ def ConfigUtils(app):
     app.jinja_env.filters['int'] = int_or_zero
     app.jinja_env.filters['str'] = str_or_empty
 
+def format_title(txt):
+    words = []
+    for w in txt.split(" "):
+        if len(w) > 1:
+            words += [w[0].upper() + w[1:].lower()]
+        else:
+            words += [w.lower()]
+    return " ".join(words)
+
 def str_or_empty(txt):
     return convert_or_default(str, txt, '')
 

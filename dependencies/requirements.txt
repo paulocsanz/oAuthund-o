@@ -5,3 +5,4 @@ gevent
 cryptography
 requests
 pexpect
+beautifulsoup4
