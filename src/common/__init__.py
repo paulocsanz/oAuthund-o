@@ -18,6 +18,7 @@ from .session import EncryptedSession
 from .headers import SecureHeader
 from .db import ConfigDB
 from .utils import ConfigUtils
+from .auth import ConfigAuth
 from . import log
 
 session = None
@@ -33,3 +34,4 @@ def InitializeLib(app):
         log,
         debug_key=b'4444444444444444444444444444444444444444444=')
     ConfigDB(app, log)
+    ConfigAuth(app, session)

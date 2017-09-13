@@ -1,8 +1,36 @@
 from datetime import datetime
 from random import SystemRandom
 from string import ascii_letters, digits
+from cryptography.fernet import Fernet, InvalidToken
 from .errors import NoDateFormat
+from hashlib import sha256
 import re
+
+def hash(content):
+    sha = sha256()
+    if not isinstance(content, bytes):
+        content = bytes(str(content), 'utf-8')
+    sha.update(content)
+    return sha.hexdigest()
+
+def fernet_key():
+    return str(Fernet.generate_key(), 'utf-8')
+
+def encrypt(key, value):
+    if not isinstance(key, bytes):
+        key = bytes(str(key), 'utf-8')
+    if not isinstance(value, bytes):
+        value = bytes(str(value), 'utf-8')
+    fernet = Fernet(key)
+    return str(fernet.encrypt(value), 'utf-8')
+
+def decrypt(key, value):
+    if not isinstance(key, bytes):
+        key = bytes(str(key), 'utf-8')
+    if not isinstance(value, bytes):
+        value = bytes(str(value), 'utf-8')
+    fernet = Fernet(key)
+    return str(fernet.decrypt(value), 'utf-8')
 
 DATE_FORMAT = None
 

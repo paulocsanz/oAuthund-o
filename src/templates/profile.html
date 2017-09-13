@@ -1,2 +1,19 @@
 <h3>Olá {{user.name}}</h3>
 <img src="{{user.photo_uri}}">
+
+{% if apps %}
+<div class='apps'>
+{% for app in apps %}
+<h2>{{app.name}}</h2>
+<b>{{app.client_id}}</b>
+<p>{{app.description}}</p>
+<a href="{{app.redirect_uri}}">{{app.redirect_uri}}</a>
+<form method="POST" action="{{url_for('delete_app', client_id=app.client_id)}}">
+	<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+	<input type='submit' value='[X]'>
+</form>
+{% endfor %}
+</div>
+{% endif %}
+
+<a href="{{url_for('register_app')}}">Cadastrar Aplicativo</a>

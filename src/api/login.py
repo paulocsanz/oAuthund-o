@@ -1,23 +1,25 @@
 from ..common.errors import NotAuthenticated
-from ..models import User
+from ..common.auth import logout_session
+from ..models import User, Authentication
 from .siga_wrapper import login as _login, get_user as _get_user
 
 def login(username, password):
-    return _login(username, password)
-    #auth = Authentication(username, password, client_id, cookie)
-    #auth.save()
-    #return auth.code
+    cookie = _login(username, password)
+    auth = Authentication(username, password, cookie)
+    auth.save()
+    return auth
 
 def grant(user_id):
     pass
 
 def get_user(session):
-    cpf = session["username"]
+    username = session["username"]
+    code = session["code"]
+    cookie = Authentication.retrieve_cookie(username, code)
     try:
-        name, photo_uri = _get_user(session["code"])
+        name, photo_uri = _get_user(cookie)
     except NotAuthenticated:
-        session.pop("username")
-        session.pop("expiration")
+        logout_session()
         raise
-    user = User(cpf, name, photo_uri)
+    user = User(username, name, photo_uri)
     return user

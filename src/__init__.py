@@ -1,9 +1,9 @@
+from flask import Flask
+app = Flask(__name__)
+
 from .common import InitializeLib
 from .common.db import DB
 from ..config import Config
-from flask import Flask
-
-app = Flask(__name__)
 
 for key, value in Config.__dict__.items():
     if not (key.startswith("__") and key.endswith("__")):

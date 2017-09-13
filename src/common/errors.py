@@ -25,5 +25,5 @@ class NoDBConfig(Exception):
 class NoDateFormat(Exception):
     pass
 
-class CRSFDetected(Exception):
+class CSRFDetected(Exception):
     pass

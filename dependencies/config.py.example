@@ -11,6 +11,8 @@ class Config:
 
     LOG_FILE = None
 
+    CODE_SIZE = 30
+
     # Tokens (cookies) encryption/sign key - empty not accepted in production
     # If leaked, reset it and restart the server to prevent unauthorized actions
 
@@ -27,4 +29,4 @@ class Config:
     SESSION_EXPIRATION = 60 * 60 * 24
     SESSION_RENEW_WHEN_MISSING = 60 * 60 * 3
 
-	CLIENT_ID_LENGTH = 18
+    CLIENT_ID_LENGTH = 18

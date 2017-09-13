@@ -1,30 +1,53 @@
+from .. import app
+from . import DB
+from ..common.utils import fernet_key, encrypt, decrypt, InvalidToken, hash
+
 class Authentication:
-    def __init__(self, username, password, client_id, cookie, id = None, code = None, is_encrypted=False):
+    def __init__(self, username, password, cookie, id = None, code = None, refresh_token = None, is_encrypted=False):
         self.id = id
-        self.code = code or random_string(app.config["CODE_SIZE"])
+        self.code = code or fernet_key()
+        self.refresh_token = refresh_token or fernet_key()
         self.username = username
-        self.client_id = client_id
-        self.cookie = cookie
-        self.encrypted_password = password if is_encrypted else encrypt(code, password)
-        self.client_id = client_id
+        if is_encrypted:
+            self.encrypted_cookie = cookie
+            self.encrypted_password = password
+        else:
+            self.encrypted_cookie = encrypt(self.code, cookie)
+            self.encrypted_password = encrypt(self.refresh_token, password)
 
     def save(self):
         with DB() as db:
             self.id = db.insert(
                     "INSERT INTO authentications "
-                    "(username, encrypted_password, client_id) "
-                    "VALUES (%s, %s, %s, %s)",
+                    "(username, code_hash, encrypted_cookie, refresh_token_hash, encrypted_password) "
+                    "VALUES (%s, %s, %s, %s, %s)",
                     self.username,
+                    hash(self.code),
+                    self.encrypted_cookie,
                     self.encrypted_password,
-                    self.client_id)
+                    hash(self.refresh_token))
 
-    def retrieve_password(username, client_id, code):
+    def retrieve_password(username, refresh_token):
+        _hash = hash(refresh_token)
         with DB() as db:
-            encrypted_password = db.find(
+            encrypted_password = db.find_all(
                     "SELECT encrypted_password "
                     "FROM authentications "
-                    "WHERE username = %s"
-                    "      AND client_id=%s",
+                    "WHERE username = %s "
+                    "      AND refresh_token_hash = %s;",
                     username,
-                    client_id)
-        return decrypt(code, encrypted_password) 
+                    _hash)
+        return decrypt(refresh_token, encrypted_password)
+
+    def retrieve_cookie(username, code):
+        _hash = hash(code)
+        with DB() as db:
+            encrypted_cookie = db.find(
+                    "SELECT encrypted_cookie "
+                    "FROM authentications "
+                    "WHERE username = %s "
+                    "      AND code_hash = %s;",
+                    username,
+                    _hash)
+            print(encrypted_cookie)
+        return decrypt(code, encrypted_cookie)

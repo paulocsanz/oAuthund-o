@@ -1,3 +1,4 @@
+from flask import request
 from .oauth import *
 from ..common.errors import NotAuthenticated
 

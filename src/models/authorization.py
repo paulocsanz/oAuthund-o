@@ -1,3 +1,5 @@
+from . import DB
+
 class Authorization:
     def __init__(self, client_id, username, code, duration, id=None):
         self.id = id

@@ -30,8 +30,8 @@ if not isfile("config.py"):
            "config.py"],
            stderr=DEVNULL).wait()
 
-    # Creates empty __init__.py to make folder a python package
-    open("__init__.py", "a").close()
+# Creates empty __init__.py to make folder a python package
+open("__init__.py", "a").close()
 
 DB_USER, DB_PASSWORD = "", ""
 def load_config():

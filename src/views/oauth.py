@@ -1,7 +1,7 @@
 from flask import request, render_template, redirect, url_for
 from datetime import datetime
-from ..common.auth import is_auth, login_required
-from ..common.errors import CRSFDetected, NoResult, MissingRequiredFields, NotAuthenticated
+from ..common.auth import is_auth, login_required, login_session, CSRF_protection
+from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated
 from ..common.utils import random_string, add_arg
 from .. import api, app, session
 
@@ -9,8 +9,13 @@ from .. import api, app, session
 @login_required
 def home():
     user = api.get_user(session)
+    try:
+        apps = api.get_apps(user.username)
+    except NoResult:
+        apps = None
     return render_template('profile.html',
-                           user=user)
+                           user=user,
+                           apps=apps)
 
 @app.route('/login')
 def authenticate():
@@ -37,25 +42,16 @@ def authenticate():
     except NoResult:
         client = None
 
-    kwargs = {"client": client}
+    session["csrf_token"] = random_string(app.config["CODE_SIZE"])
+    kwargs = {"client": client,
+              "csrf_token": session["csrf_token"]}
     if state != "":
         kwargs["state"] = state
     return render_template("login.html", **kwargs)
 
 @app.route('/login', methods=["POST"])
+@CSRF_protection
 def login():
-    try:
-        is_auth()
-        if client_id != "":
-            kwargs = {"client_id": client_id}
-            if state != "":
-                kwargs["state"] = state
-            return redirect(url_for("authorize", **kwargs))
-        else:
-            return redirect(url_for("home"))
-    except NotAuthenticated:
-        pass
-
     state = request.form.get("state") or ""
     client_id = request.form.get("client_id") or ""
     username = request.form.get("username") or ""
@@ -64,15 +60,13 @@ def login():
     if "" in [username, password]:
         raise MissingRequiredFields()
 
-    code = api.login(username, password)
-    session["code"] = code
-    session["username"] = username
-    session["expiration"] = app.config["SESSION_EXPIRATION"]
+    auth = api.login(username, password)
+    login_session(auth, username)
     
     if client_id == "":
         return redirect(url_for("home"))
 
-    kwargs = {"code": code,
+    kwargs = {"code": auth.code,
               "client_id": client_id}
     if state != "":
         kwargs["state"] = state
@@ -100,11 +94,17 @@ def authorize():
     except NoResult:
         pass
 
-    user = api.get_user(session)
+    try:
+        user = api.get_user(session)
+    except NoResult:
+        return redirect(url_for('login'))
+
+    session["csrf_token"] = random_string(app.config["CODE_SIZE"])
     return render_template('authorize.html',
                            code=code,
                            client=client,
-                           user=user)
+                           user=user,
+                           csrf_token=session["csrf_token"])
 
 @app.route('/authorize', methods=["POST"])
 def authorize_post():
@@ -113,9 +113,12 @@ def authorize_post():
 @app.route('/register/app')
 @login_required
 def register_app():
-    return render_template("register_app.html")
+    session["csrf_token"] = random_string(app.config["CODE_SIZE"])
+    return render_template("register_app.html",
+                           csrf_token=session["csrf_token"])
 
 @app.route('/register/app', methods=["POST"])
+@CSRF_protection
 @login_required
 def register_app_post():
     name = request.form.get("name") or ""
@@ -123,8 +126,22 @@ def register_app_post():
     redirect_uri = request.form.get("redirect_uri") or ""
     if "" in [name, redirect_uri]:
         raise MissingRequiredFields()
-    client_id = api.register_app(name, description, redirect_uri)
+
+    client_id = api.register_app(session["username"],
+                                 name,
+                                 description,
+                                 redirect_uri)
     return redirect(url_for('application', client_id=client_id))
+
+@app.route('/delete/app', methods=["POST"])
+@CSRF_protection
+@login_required
+def delete_app():
+    client_id = request.args.get("client_id")
+    if client_id == "":
+        raise MissingRequiredFields()
+    api.delete_app(session["username"], client_id)
+    return redirect(url_for("home"))
 
 @app.route('/app/<client_id>')
 def application(client_id):

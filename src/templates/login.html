@@ -4,6 +4,7 @@
 <form method="POST">
 	<input type="text" name="username" />
 	<input type="password" name="password" />
+	<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
 	<input type="hidden" name="state" value="{{state}}">
 	{% if client_id %}
 		<input type="hidden" name="client_id" value="{{client.id}}">

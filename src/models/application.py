@@ -3,9 +3,10 @@ from .. import app
 from . import DB
 
 class Application:
-    def __init__(self, name, description, redirect_uri, id=None, client_id=None):
+    def __init__(self, creator_username, name, description, redirect_uri, id=None, client_id=None):
         self.id = id
         self.name = name
+        self.creator_username = creator_username
         self.description = description
         self.redirect_uri = redirect_uri
         self.client_id = client_id or random_string(app.config["CLIENT_ID_LENGTH"])
@@ -14,17 +15,34 @@ class Application:
         with DB() as db:
             self.id = db.insert(
                     "INSERT INTO applications "
-                    "(name, description, redirect_uri, client_id) "
-                    "VALUES (%s, %s, %s, %s);",
+                    "(creator_username, name, description, redirect_uri, client_id) "
+                    "VALUES (%s, %s, %s, %s, %s);",
+                    self.creator_username,
                     self.name,
                     self.description,
                     self.redirect_uri,
                     self.client_id)
 
-    def find(client_id):
+    def delete(username, client_id):
+        with DB() as db:
+            db.exec("DELETE FROM applications "
+                    "WHERE creator_username = %s "
+                    "      AND client_id = %s;",
+                    username,
+                    client_id)
+
+    def find_by_client(client_id):
         with DB() as db:
             return Application(db.find(
-                "SELECT name, description, redirect_uri, id, client_id "
+                "SELECT username, name, description, redirect_uri, id, client_id "
                 "FROM applications "
                 "WHERE client_id = %s",
                 client_id))
+
+    def find_by_user(username):
+        with DB() as db:
+            return [Application(*app) for app in db.find_all(
+                "SELECT creator_username, name, description, redirect_uri, id, client_id "
+                "FROM applications "
+                "WHERE creator_username = %s",
+                username)]

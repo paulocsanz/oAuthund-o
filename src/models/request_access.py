@@ -1,5 +1,6 @@
-from ..common.utils import random_string
 from .. import app
+from ..common.utils import random_string
+from . import DB
 from .authorization import Authorization
 
 class RequestAccess:

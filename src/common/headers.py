@@ -36,20 +36,19 @@ class SecureHeader:
             response.headers['X-Download-Options'] = 'noopen'
             response.headers['X-Permitted-Cross-Domain-Policies'] = 'none'
             response.headers['Content-Security-Policy'] = (
-                "default-src none; "
-                "script-src none; "
-                "style-src self; "
-                "img-src self https://sigadocker.ufrj.br:8090/; "
-                "connect-src none; "
-                "font-src none; "
-                "object-src none; "
-                "media-src self; "
+                "default-src 'none'; "
+                "script-src 'none'; "
+                "style-src 'self'; "
+                "img-src 'self' https://sigadocker.ufrj.br:8090/; "
+                "connect-src 'none'; "
+                "font-src 'none'; "
+                "object-src 'none'; "
+                "media-src 'self'; "
                 "sandbox allow-forms; "
-                "report-uri {}; "
-                "child-src none; "
-                "form-action self; "
-                "frame-ancestors none; "
-                "plugin-types application/pdf;"
+                "report-uri '{}'; "
+                "child-src 'none'; "
+                "form-action 'self'; "
+                "frame-ancestors 'none'; "
                 .format(url_for('csp_report')))
             response.headers['Server'] = ''
             response.headers.pop('ETag', None)
