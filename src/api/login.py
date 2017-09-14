@@ -14,8 +14,8 @@ def grant(user_id):
 
 def get_user(session):
     username = session["username"]
-    code = session["code"]
-    cookie = Authentication.retrieve_cookie(username, code)
+    access_token = session["access_token"]
+    cookie = Authentication.retrieve_cookie(username, access_token)
     try:
         name, photo_uri = _get_user(cookie)
     except NotAuthenticated:

@@ -3,25 +3,28 @@ from .. import app
 from . import DB
 
 class Application:
-    def __init__(self, creator_username, name, description, redirect_uri, id=None, client_id=None):
+    def __init__(self, creator_username, name, description, redirect_uri,
+                 id=None, client_id=None, client_secret = None):
         self.id = id
         self.name = name
         self.creator_username = creator_username
         self.description = description
         self.redirect_uri = redirect_uri
         self.client_id = client_id or random_string(app.config["CLIENT_ID_LENGTH"])
+        self.client_secret = client_secret or random_string(app.config["CLIENT_ID_LENGTH"])
 
     def save(self):
         with DB() as db:
             self.id = db.insert(
                     "INSERT INTO applications "
-                    "(creator_username, name, description, redirect_uri, client_id) "
-                    "VALUES (%s, %s, %s, %s, %s);",
+                    "(creator_username, name, description, redirect_uri, client_id, client_secret) "
+                    "VALUES (%s, %s, %s, %s, %s, %s);",
                     self.creator_username,
                     self.name,
                     self.description,
                     self.redirect_uri,
-                    self.client_id)
+                    self.client_id,
+                    self.client_secret)
 
     def delete(username, client_id):
         with DB() as db:
@@ -34,7 +37,7 @@ class Application:
     def find_by_client(client_id):
         with DB() as db:
             return Application(*db.find(
-                "SELECT creator_username, name, description, redirect_uri, id, client_id "
+                "SELECT creator_username, name, description, redirect_uri, id, client_id, client_secret "
                 "FROM applications "
                 "WHERE client_id = %s",
                 client_id))
@@ -42,7 +45,7 @@ class Application:
     def find_by_user(username):
         with DB() as db:
             return [Application(*app) for app in db.find_all(
-                "SELECT creator_username, name, description, redirect_uri, id, client_id "
+                "SELECT creator_username, name, description, redirect_uri, id, client_id, client_secret "
                 "FROM applications "
                 "WHERE creator_username = %s",
                 username)]

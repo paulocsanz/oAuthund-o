@@ -15,11 +15,11 @@
             </ul>
         </div>
 
-		{% if request.args.get("e") %}
-		<div id='error-box'>
-			<p>{{request.args.get("e")}}</p>
-		</div>
-		{% endif %}
+        {% if request.args.get("e") %}
+        <div id='error-box'>
+            <p>{{request.args.get("e")}}</p>
+        </div>
+        {% endif %}
         <div id='content'>
             {% block content %}
             {% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'menu.html' %}
+
+{% block menu %}
+<li><a href="{{url_for('home')}}">Meu Perfil</a></li>
+<li><a href="{{url_for('register_app')}}">Cadastrar Aplicação</a></li>
+{% endblock %}
+
+{% block content %}
+<h2>{{app.name}}</h2>
+<b>{{app.client_id}}</b>
+<p class='spoiler'>{{app.client_secret}}</p>
+<p>{{app.description}}</p>
+<a href="{{app.redirect_uri}}">{{app.redirect_uri}}</a>
+<form method="POST" action="{{url_for('delete_app')}}">
+    <input type="hidden" name="client_id" value="{{app.client_id}}">
+    <input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+    <input type='submit' value='[X]'>
+</form>
+{% endblock %}

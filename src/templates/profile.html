@@ -1,35 +1,50 @@
+{% extends 'menu.html' %}
+
+{% block menu %}
+<li><a href="{{url_for('register_app')}}">Cadastrar Aplicação</a></li>
+{% endblock %}
+
+{% block content %}
 <h3>Olá {{user.name}}</h3>
 <img src="{{user.photo_uri}}">
 
 {% if apps %}
 <div class='apps'>
-{% for app in apps %}
-<h2>{{app.name}}</h2>
-<b>{{app.client_id}}</b>
-<p>{{app.description}}</p>
-<a href="{{app.redirect_uri}}">{{app.redirect_uri}}</a>
-<form method="POST" action="{{url_for('delete_app')}}">
-	<input type="hidden" name="client_id" value="{{app.client_id}}">
-	<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
-	<input type='submit' value='[X]'>
-</form>
-{% endfor %}
+	{% for app in apps %}
+	<h2>{{app.name}}</h2>
+	<b>{{app.client_id}}</b>
+	<p class='spoiler'>{{app.client_secret}}</p>
+	<p>{{app.description}}</p>
+	<a href="{{app.redirect_uri}}">{{app.redirect_uri}}</a>
+	<form action="{{url_for('application')}}">
+		<input type="hidden" name="client_id" value="{{app.client_id}}">
+		<input type="submit" value="Ver">
+	</form>
+	<form method="POST" action="{{url_for('delete_app')}}">
+		<input type="hidden" name="client_id" value="{{app.client_id}}">
+		<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+		<input type='submit' value='Apagar'>
+	</form>
+	{% endfor %}
 </div>
 {% endif %}
 
 {% if authorizations %}
-<h1>Aplicativos autorizados</h1>
-{% for a in authorizations %}
+<div class="authorized-apps">
+	<h1>Aplicativos autorizados</h1>
+	{% for a in authorizations %}
 	<div class='authorization'>
 		<h3>{{a.app_name}}</h3>
 		<p>{{a.app_description|optional}}</p>
 		<form method="POST" action="{{url_for('delete_authorization')}}">
 			<input type="hidden" name="client_id" value="{{a.client_id}}">
 			<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
-			<input type='submit' value='[X]'>
+			<input type='submit' value='Apagar'>
 		</form>
 	</div>
-{% endfor %}
+	{% endfor %}
+</div>
 {% endif %}
 
 <a href="{{url_for('register_app')}}">Cadastrar Aplicativo</a>
+{% endblock %}

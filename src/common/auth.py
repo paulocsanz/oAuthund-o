@@ -14,14 +14,14 @@ def ConfigAuth(app, _session):
 
 def login_session(auth, username):
     global session
-    session["code"] = auth.code
+    session["access_token"] = auth.access_token
     session["refresh_token"] = auth.refresh_token
     session["username"] = username
     session["expiration"] = SESSION_EXPIRATION
 
 def logout_session():
     global session
-    session.pop("code", None)
+    session.pop("access_token", None)
     session.pop("refresh_token", None)
     session.pop("username", None)
     session.pop("expiration", None)
@@ -30,13 +30,13 @@ def is_auth():
     global session
     username = session.get("username") or ""
     expiration = session.get("expiration") or ""
-    code = session.get("code") or ""
+    access_token = session.get("access_token") or ""
 
-    if "" in [username, expiration, code]:
+    if "" in [username, expiration, access_token]:
         raise NotAuthenticated()
 
     try:
-        Authentication.retrieve_cookie(username, code)
+        Authentication.retrieve_cookie(username, access_token)
     except NoResult:
         raise NotAuthenticated()
 
