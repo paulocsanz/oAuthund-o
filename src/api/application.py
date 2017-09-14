@@ -3,7 +3,7 @@ from ..models import Application
 def get_apps(user_id):
     return Application.find_by_user(user_id)
 
-def get_client(client_id):
+def get_application(client_id):
     return Application.find_by_client(client_id)
 
 def register_app(username, name, description, redirect_uri):

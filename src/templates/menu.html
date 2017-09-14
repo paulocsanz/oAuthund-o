@@ -14,17 +14,13 @@
             {% endblock %}
             </ul>
         </div>
+
+		{% if request.args.get("e") %}
+		<div id='error-box'>
+			<p>{{request.args.get("e")}}</p>
+		</div>
+		{% endif %}
         <div id='content'>
-            {% if error|exists and error != "" %}
-                <div class="error">
-                    <h4>{{error}}</h4>
-                </div>
-            {% endif %}
-            {% if success|exists and success != "" %}
-                <div class="success">
-                    <h4>{{success}}</h4>
-                </div>
-            {% endif %}
             {% block content %}
             {% endblock %}
         </div>

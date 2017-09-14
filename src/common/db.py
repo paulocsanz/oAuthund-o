@@ -35,14 +35,17 @@ def ConfigDB(_app, _log):
     mysql = MySQL(app)
 
 class DB:
-    def __init__(self):
+    def __init__(self, db = None):
         global app, log, mysql
         if None in [app, log, mysql]:
             raise NoDBConfig
 
-        self._app = app
-        self.log = log
-        self.connection = mysql.connection
+        if db is None:
+            self._app = app
+            self.log = log
+            self.connection = mysql.connection
+        else:
+            self = db
 
     def __enter__(self):
         try:

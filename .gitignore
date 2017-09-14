@@ -5,3 +5,5 @@ config.py
 
 .*.swo
 .*.swp
+
+/__init__.py

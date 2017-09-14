@@ -6,8 +6,8 @@
 	<input type="password" name="password" />
 	<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
 	<input type="hidden" name="state" value="{{state}}">
-	{% if client_id %}
-		<input type="hidden" name="client_id" value="{{client.id}}">
+	{% if app %}
+		<input type="hidden" name="client_id" value="{{app.client_id}}">
 	{% endif %}
 	<input type="submit" value="Entrar" />
 </form>

@@ -49,5 +49,4 @@ class Authentication:
                     "      AND code_hash = %s;",
                     username,
                     _hash)
-            print(encrypted_cookie)
         return decrypt(code, encrypted_cookie)

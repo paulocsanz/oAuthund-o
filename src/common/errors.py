@@ -1,5 +1,6 @@
 class NotAuthenticated(Exception):
-    pass
+    def __str__(self):
+        return "Por favor, se autentique com o sigalogado para continuar"
 
 class MissingRequiredFields(Exception):
     pass
@@ -26,4 +27,10 @@ class NoDateFormat(Exception):
     pass
 
 class CSRFDetected(Exception):
+    pass
+
+class OAuth2Error(Exception):
+    pass
+
+class MissingClientId(OAuth2Error):
     pass

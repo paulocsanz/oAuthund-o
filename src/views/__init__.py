@@ -6,6 +6,11 @@ from ..common.errors import NotAuthenticated
 def authenticate(err):
     state = request.args.get("state")
     client_id = request.args.get("client_id")
-    kwargs = {arg[0]: arg[1] for arg in [("state", state), ("client_id", client_id), ("e", err)] if arg[1] is not None}
+    kwargs = {key: value
+                for key, value in [("state", state),
+                            ("client_id", client_id),
+                            ("e", err)]
+                    if value is not None}
     kwargs["e"] = str(err)
+    session["next"] = request.script_root + request.path
     return redirect(url_for("login", **kwargs))

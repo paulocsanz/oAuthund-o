@@ -17,8 +17,6 @@ CREATE TABLE IF NOT EXISTS sigalogado.authorizations
     id            INT       NOT NULL AUTO_INCREMENT,
     client_id     CHAR(255) NOT NULL,
     username      CHAR(255)  NOT NULL,
-    code          CHAR(255) NOT NULL,
-    duration      INT       NOT NULL,
     CONSTRAINT    id           PRIMARY KEY(id)
 );
 

@@ -1,7 +1,18 @@
 {% extends 'menu.html' %}
 
 {% block content %}
-<h3>Bem vindo ao sigalogado, {{nome}}.</h3>
+<h3>Bem vindo ao sigalogado, {{user.name}}.</h3>
 
-<img src="{{src}}" />
+<img src="{{user.photo_uri}}" />
+
+<b>{{app.name}} deseja permissão para acessar suas informações do SIGA.</b>
+<p>{{app.description}}</p>
+
+<form method="POST">
+	<input type="hidden" name="csrf_token" value="{{csrf_token}}">
+	<input type="hidden" name="state" value="{{state}}">
+	<input type="hidden" name="client_id" value="{{app.client_id}}">
+	<input type="submit" value="Autorizar">
+</form>
+
 {% endblock %}

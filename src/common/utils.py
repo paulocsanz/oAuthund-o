@@ -6,6 +6,21 @@ from .errors import NoDateFormat
 from hashlib import sha256
 import re
 
+def ConfigUtils(app):
+    global DATE_FORMAT
+    DATE_FORMAT = app.config["DATE_FORMAT"]
+
+    app.jinja_env.filters['length'] = len
+    app.jinja_env.filters['date'] = format_date
+    app.jinja_env.filters['exists'] = exists
+    app.jinja_env.filters['is_empty'] = is_empty
+    app.jinja_env.filters['int'] = int_or_zero
+    app.jinja_env.filters['str'] = str_or_empty
+    app.jinja_env.filters['optional'] = optional
+
+def optional(txt):
+    return txt if txt is not None else ""
+
 def hash(content):
     sha = sha256()
     if not isinstance(content, bytes):
@@ -33,17 +48,6 @@ def decrypt(key, value):
     return str(fernet.decrypt(value), 'utf-8')
 
 DATE_FORMAT = None
-
-def ConfigUtils(app):
-    global DATE_FORMAT
-    DATE_FORMAT = app.config["DATE_FORMAT"]
-
-    app.jinja_env.filters['length'] = len
-    app.jinja_env.filters['date'] = format_date
-    app.jinja_env.filters['exists'] = exists
-    app.jinja_env.filters['is_empty'] = is_empty
-    app.jinja_env.filters['int'] = int_or_zero
-    app.jinja_env.filters['str'] = str_or_empty
 
 def format_title(txt):
     words = []

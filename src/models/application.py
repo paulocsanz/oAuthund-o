@@ -33,8 +33,8 @@ class Application:
 
     def find_by_client(client_id):
         with DB() as db:
-            return Application(db.find(
-                "SELECT username, name, description, redirect_uri, id, client_id "
+            return Application(*db.find(
+                "SELECT creator_username, name, description, redirect_uri, id, client_id "
                 "FROM applications "
                 "WHERE client_id = %s",
                 client_id))

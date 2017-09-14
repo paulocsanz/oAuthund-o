@@ -8,12 +8,28 @@
 <b>{{app.client_id}}</b>
 <p>{{app.description}}</p>
 <a href="{{app.redirect_uri}}">{{app.redirect_uri}}</a>
-<form method="POST" action="{{url_for('delete_app', client_id=app.client_id)}}">
+<form method="POST" action="{{url_for('delete_app')}}">
+	<input type="hidden" name="client_id" value="{{app.client_id}}">
 	<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
 	<input type='submit' value='[X]'>
 </form>
 {% endfor %}
 </div>
+{% endif %}
+
+{% if authorizations %}
+<h1>Aplicativos autorizados</h1>
+{% for a in authorizations %}
+	<div class='authorization'>
+		<h3>{{a.app_name}}</h3>
+		<p>{{a.app_description|optional}}</p>
+		<form method="POST" action="{{url_for('delete_authorization')}}">
+			<input type="hidden" name="client_id" value="{{a.client_id}}">
+			<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+			<input type='submit' value='[X]'>
+		</form>
+	</div>
+{% endfor %}
 {% endif %}
 
 <a href="{{url_for('register_app')}}">Cadastrar Aplicativo</a>
