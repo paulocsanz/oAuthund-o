@@ -24,12 +24,12 @@ class Authentication:
                     self.username,
                     hash(self.access_token),
                     self.encrypted_cookie,
-                    self.encrypted_password,
-                    hash(self.refresh_token))
+                    hash(self.refresh_token),
+                    self.encrypted_password)
 
     def retrieve_password(refresh_token):
         with DB() as db:
-            encrypted_password = db.find_all(
+            encrypted_password = db.find_value(
                     "SELECT encrypted_password "
                     "FROM authentications "
                     "WHERE refresh_token_hash = %s;",
@@ -38,7 +38,7 @@ class Authentication:
 
     def retrieve_cookie(access_token):
         with DB() as db:
-            encrypted_cookie = db.find(
+            encrypted_cookie = db.find_value(
                     "SELECT encrypted_cookie "
                     "FROM authentications "
                     "WHERE access_token_hash = %s;",
@@ -47,7 +47,7 @@ class Authentication:
 
     def get_username(access_token):
         with DB() as db:
-            return db.find(
+            return db.find_value(
                     "SELECT username "
                     "FROM authentications "
                     "WHERE access_token_hash = %s;",

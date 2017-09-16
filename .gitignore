@@ -7,3 +7,7 @@ config.py
 .*.swp
 
 /__init__.py
+
+/tests/token
+/tests/*.json
+/tests/*.png

@@ -1,8 +1,9 @@
 from bs4 import BeautifulSoup
 from werkzeug.exceptions import InternalServerError
 from requests import get, post
+from io import BytesIO
 from ..common.errors import UserNotFound, NotAuthenticated
-from ..common.utils import format_title
+from ..common.utils import format_title, _photo_uri
 
 def login(username, password):
     uri = "https://portalaluno.ufrj.br/Portal/acesso"
@@ -30,7 +31,6 @@ def login(username, password):
 
 def get_user(cookie):
     uri = "https://portalaluno.ufrj.br/Portal/inicial"
-    photo_base_uri = "https://sigadocker.ufrj.br:8090/{}"
     req = get(uri,cookies={"gnosys-token": cookie})
     if req.status_code != 200:
         raise InternalServerError(req.status_code)
@@ -45,6 +45,13 @@ def get_user(cookie):
     avatar_id_list = soup.select("#avatarId")
     if len(avatar_id_list) < 1:
         raise NotAuthenticated()
-    photo_uri = photo_base_uri.format(avatar_id_list[0]["value"])
 
-    return name, photo_uri
+    return name, avatar_id_list[0]["value"]
+
+def get_user_photo(cookie, photo_id):
+    uri = _photo_uri(photo_id)
+    req = get(uri,cookies={"gnosys-token": cookie})
+    if req.status_code != 200:
+        raise InternalServerError(req.status_code)
+
+    return BytesIO(req.content)

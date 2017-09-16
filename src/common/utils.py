@@ -106,3 +106,6 @@ def object_json(obj):
                 if not (k.startswith("_")
                         or callable(k))}
     return json_dumps(attrs)
+
+def _photo_uri(photo_id):
+    return "https://sigadocker.ufrj.br:8090/{}".format(photo_id)

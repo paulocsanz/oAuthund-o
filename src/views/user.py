@@ -1,12 +1,13 @@
+from flask import render_template, send_file
 from ..common.errors import NoResult, MissingRequiredFields
-from ..common.auth import login_required, OAuth_authentication
+from ..common.auth import login_required, OAuth_authentication, get_access_token
 from ..common.utils import object_json, random_string
 from .. import api, app, session
 
 @app.route('/')
 @login_required
 def home(cookie):
-    user = api.get_user(cookie)
+    user = api.get_user(session["username"], cookie)
 
     try:
         authorizations = api.get_authorizations(user.username)
@@ -22,8 +23,16 @@ def home(cookie):
                            user=user,
                            apps=apps,
                            authorizations=authorizations)
-    
-@app.route('/user', methods=["POST"])
+
+@app.route('/user.json', methods=["POST"])
 @OAuth_authentication
 def user(cookie):
-    return object_json(api.get_user(cookie))
+    username = api.get_username(get_access_token())
+    return object_json(api.get_user(username, cookie))
+
+@app.route('/user/photo/<id>.png', methods=["POST"])
+@OAuth_authentication
+def photo(cookie, id):
+    return send_file(api.get_user_photo(cookie, id),
+                     attachment_filename="profile.png",
+                     as_attachment=True)

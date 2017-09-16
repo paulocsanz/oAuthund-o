@@ -63,14 +63,18 @@ def CSRF_protection(f):
         return f(*args, **kwargs)
     return wrap
 
+def get_access_token():
+    return (request.form.get("access_token")
+            or (request.headers.get("Authorization")
+                               .split("Bearer")
+                               .strip())
+            or "")
+
+
 def OAuth_authentication(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        access_token = (request.form.get("access_token")
-                        or (request.headers.get("Authorization")
-                                           .split("Bearer")
-                                           .strip())
-                        or "")
+        access_token = get_access_token()
         if access_token == "":
             raise NoAccessToken()
         try:

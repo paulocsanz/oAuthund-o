@@ -2,7 +2,7 @@ from flask import request, redirect, url_for, render_template
 from json import loads as json_loads, dumps as json_dumps
 from ..common.auth import login_required, CSRF_protection
 from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated, MissingClientId
-from ..common.utils import random_string, add_arg, object_json
+from ..common.utils import random_string, add_arg, object_json, hash
 from .. import api, app, session
 
 @app.route('/oauth/token', methods=["POST"])
@@ -28,8 +28,8 @@ def tokens():
 @login_required
 def authorize(cookie):
     # Ignores response_type, since this endpoint only does this
-    state = request.args.get("state") or ""
-    client_id = request.args.get("client_id") or ""
+    state = request.args.get("state") or request.form.get("state") or ""
+    client_id = request.args.get("client_id") or request.form.get("client_id") or ""
 
     kwargs = {}
     if state != "":
@@ -43,17 +43,18 @@ def authorize(cookie):
     try:
         authorization = api.get_authorization(client_id,
                                               session["username"])
-        return authorize_post(cookie)
+        return authorize_post()
     except NoResult:
         pass
 
     try:
-        kwargs["user"] = api.get_user(cookie)
+        kwargs["user"] = api.get_user(session["username"], cookie)
     except NoResult:
         kwargs["client_id"] = client_id
         return redirect(url_for('login', **kwargs))
 
-    session["csrf_token"] = session.get("csrf_token") or random_string(app.config["CODE_SIZE"])
+    kwargs["csrf_token"] = session["csrf_token"] = (session.get("csrf_token")
+                                                    or random_string(app.config["CODE_SIZE"]))
     return render_template('authorize.html', **kwargs)
 
 @app.route('/oauth/authorize', methods=["POST"])
