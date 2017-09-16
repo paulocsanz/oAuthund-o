@@ -1,5 +1,9 @@
-from flask import request
 from .oauth import *
+from .authentication import *
+from .application import *
+from .user import *
+
+from flask import request
 from ..common.errors import NotAuthenticated
 
 @app.errorhandler(NotAuthenticated)

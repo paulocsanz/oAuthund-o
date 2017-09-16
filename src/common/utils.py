@@ -1,4 +1,5 @@
 from datetime import datetime
+from json import dumps as json_dumps
 from random import SystemRandom
 from string import ascii_letters, digits
 from cryptography.fernet import Fernet, InvalidToken
@@ -98,3 +99,10 @@ def add_arg(uri, **kwargs):
         uri += "{}{}={}".format(char, key, value)
         char = "&"
     return uri
+
+def object_json(obj):
+    # Only public non-function attributes
+    attrs = {k:v for k, v in obj.__dict__.items()
+                if not (k.startswith("_")
+                        or callable(k))}
+    return json_dumps(attrs)

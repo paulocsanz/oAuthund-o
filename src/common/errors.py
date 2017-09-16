@@ -34,3 +34,9 @@ class OAuth2Error(Exception):
 
 class MissingClientId(OAuth2Error):
     pass
+
+class NoAccessToken(OAuth2Error):
+    pass
+
+class InvalidToken(OAuth2Error):
+    pass

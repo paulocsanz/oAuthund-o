@@ -2,7 +2,7 @@ from flask import request
 from functools import wraps
 from datetime import datetime
 from .utils import random_string
-from .errors import NotAuthenticated, NoResult, CSRFDetected
+from .errors import NotAuthenticated, NoResult, CSRFDetected, NoAccessToken, InvalidToken
 from ..models import Authentication
 
 SESSION_EXPIRATION = None
@@ -36,18 +36,19 @@ def is_auth():
         raise NotAuthenticated()
 
     try:
-        Authentication.retrieve_cookie(username, access_token)
+        cookie = Authentication.retrieve_cookie(access_token)
     except NoResult:
         raise NotAuthenticated()
 
     if expiration > datetime.now().timestamp():
         raise NotAuthenticated()
+    return cookie
 
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        is_auth()
-        return f(*args, **kwargs)
+        cookie = is_auth()
+        return f(cookie, *args, **kwargs)
     return wrap
 
 def CSRF_protection(f):
@@ -60,4 +61,21 @@ def CSRF_protection(f):
         if csrf:
             raise CSRFDetected()
         return f(*args, **kwargs)
+    return wrap
+
+def OAuth_authentication(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        access_token = (request.form.get("access_token")
+                        or (request.headers.get("Authorization")
+                                           .split("Bearer")
+                                           .strip())
+                        or "")
+        if access_token == "":
+            raise NoAccessToken()
+        try:
+            cookie = Authentication.retrieve_cookie(access_token)
+        except NoResult:
+            raise InvalidToken()
+        return f(cookie, *args, **kwargs)
     return wrap

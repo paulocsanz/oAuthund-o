@@ -20,7 +20,7 @@
 		<input type="hidden" name="client_id" value="{{app.client_id}}">
 		<input type="submit" value="Ver">
 	</form>
-	<form method="POST" action="{{url_for('delete_app')}}">
+	<form method="POST" action="{{url_for('delete_application')}}">
 		<input type="hidden" name="client_id" value="{{app.client_id}}">
 		<input type='hidden' name='csrf_token' value='{{csrf_token}}'>
 		<input type='submit' value='Apagar'>
