@@ -30,9 +30,14 @@ def user(cookie):
     username = api.get_username(get_access_token())
     return object_json(api.get_user(username, cookie))
 
-@app.route('/user/photo/<id>.png', methods=["POST"])
+@app.route('/user/profile.png', methods=["GET", "POST"])
+@OAuth_authentication
+def photo_profile(cookie):
+    user = api.get_user(None, cookie)
+    return photo(user.photo_id)
+
+@app.route('/user/photo/<id>.png', methods=["GET", "POST"])
 @OAuth_authentication
 def photo(cookie, id):
     return send_file(api.get_user_photo(cookie, id),
-                     attachment_filename="profile.png",
-                     as_attachment=True)
+                     mimetype="image/png")

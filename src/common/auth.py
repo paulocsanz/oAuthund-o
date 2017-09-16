@@ -65,9 +65,10 @@ def CSRF_protection(f):
 
 def get_access_token():
     return (request.form.get("access_token")
-            or (request.headers.get("Authorization")
-                               .split("Bearer")
+            or ((request.headers.get("Authorization") or "")
+                               .split("Bearer")[-1]
                                .strip())
+            or session.get("access_token")
             or "")
 
 
