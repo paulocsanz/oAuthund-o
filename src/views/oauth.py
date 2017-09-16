@@ -1,3 +1,4 @@
+from flask import request, redirect, url_for, render_template
 from json import loads as json_loads, dumps as json_dumps
 from ..common.auth import login_required, CSRF_protection
 from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated, MissingClientId
@@ -6,7 +7,7 @@ from .. import api, app, session
 
 @app.route('/oauth/token', methods=["POST"])
 def tokens():
-    # Also ignores grant_type, since endpoint only does this
+    # Ignores grant_type, since endpoint only does this
     code = request.form.get("code") or ""
     client_id = request.form.get("client_id") or ""
     client_secret = request.form.get("client_secret") or ""
@@ -14,8 +15,10 @@ def tokens():
 
     username = api.get_username(access_token)
     password = api.get_password(refresh_token)
-    # REFRESH TOKEN NOT MATCHING
-    api.login(username, password, access_token, refresh_token)
+    api.authenticate(username,
+                     password,
+                     access_token,
+                     refresh_token)
     return json_dumps({"access_token": access_token,
                        "refresh_token": refresh_token,
                        "token_type": "bearer",
@@ -24,7 +27,7 @@ def tokens():
 @app.route('/oauth/authorize')
 @login_required
 def authorize(cookie):
-    # Let's ignore response_type, since this endpoint only does this
+    # Ignores response_type, since this endpoint only does this
     state = request.args.get("state") or ""
     client_id = request.args.get("client_id") or ""
 
@@ -40,7 +43,7 @@ def authorize(cookie):
     try:
         authorization = api.get_authorization(client_id,
                                               session["username"])
-        return authorize_post()
+        return authorize_post(cookie)
     except NoResult:
         pass
 
@@ -58,7 +61,7 @@ def authorize(cookie):
 @login_required
 def authorize_post(cookie):
     client_id = request.form.get("client_id") or request.args.get("client_id") or ""
-    state = request.form.get("state") or ""
+    state = request.form.get("state") or request.args.get("state") or ""
 
     try:
         authorization = api.get_authorization(client_id,

@@ -28,13 +28,12 @@ class Authentication:
                     hash(self.refresh_token))
 
     def retrieve_password(refresh_token):
-        _hash = hash(refresh_token)
         with DB() as db:
             encrypted_password = db.find_all(
                     "SELECT encrypted_password "
                     "FROM authentications "
                     "WHERE refresh_token_hash = %s;",
-                    _hash)
+                    hash(refresh_token))
         return decrypt(refresh_token, encrypted_password)
 
     def retrieve_cookie(access_token):

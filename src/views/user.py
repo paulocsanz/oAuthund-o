@@ -25,6 +25,5 @@ def home(cookie):
     
 @app.route('/user', methods=["POST"])
 @OAuth_authentication
-def user(access_token):
-    cookie = api.get_cookie(access_token)
+def user(cookie):
     return object_json(api.get_user(cookie))

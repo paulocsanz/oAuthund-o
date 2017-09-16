@@ -47,7 +47,7 @@ def login_post(cookie):
     if "" in [username, password]:
         raise MissingRequiredFields()
 
-    auth = api.login(username, password)
+    auth = api.authenticate(username, password)
     login_session(auth, username)
 
     if session.get("next") is not None:
