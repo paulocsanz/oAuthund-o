@@ -1,4 +1,3 @@
-from .. import app
 from . import DB
 from ..common.utils import fernet_key, encrypt, decrypt, hash
 

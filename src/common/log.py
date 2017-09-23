@@ -18,8 +18,7 @@ import json as _json
 from traceback import format_exception
 from sys import exc_info
 from multiprocessing import Process, Queue
-from .utils import (format_date, now_timestamp, fix_whitespace,
-                    is_empty, exists)
+from .utils import (format_date, now_timestamp, fix_whitespace, exists)
 
 DEBUG = False
 OUTPUT_FILE = None

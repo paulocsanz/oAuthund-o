@@ -1,4 +1,5 @@
-from ..common.errors import InvalidClientId, InvalidCodeOrClientSecret
+from .application import get_application
+from ..common.errors import NoResult, InvalidCodeOrClientSecret
 from ..models import GrantAccess
 
 def set_tokens(client_id, access_token, refresh_token):
@@ -9,7 +10,7 @@ def set_tokens(client_id, access_token, refresh_token):
 def get_tokens(code, client_id, client_secret):
     try:
         return GrantAccess.grant(code, client_id, client_secret)
-    except NotFound:
+    except NoResult:
         # Raises InvalidClientId if it doesn't exist
         get_application(client_id)
         raise InvalidCodeOrClientSecret()

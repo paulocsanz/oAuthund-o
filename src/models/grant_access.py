@@ -1,7 +1,5 @@
-from .. import app
 from ..common.utils import decrypt, encrypt, fernet_key, hash
 from . import DB
-from .authorization import Authorization
 
 class GrantAccess:
     def __init__(self, client_id, access_token = None, refresh_token = None,

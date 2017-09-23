@@ -1,7 +1,7 @@
-from flask import request, render_template, redirect, url_for
-from ..common.utils import random_string, add_args, get_arg, get_form, optional_args
-from ..common.auth import is_auth, login_required, login_session, CSRF_protection, get_csrf_token
-from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated, InvalidClientId
+from flask import render_template, redirect, url_for
+from ..common.utils import add_args, get_arg, get_form, optional_args
+from ..common.auth import is_auth, login_session, CSRF_protection, get_csrf_token
+from ..common.errors import MissingRequiredFields, NotAuthenticated, InvalidClientId
 from .. import api, app, session
 
 @app.route('/login')

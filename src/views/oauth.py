@@ -1,10 +1,9 @@
-from flask import request, redirect, url_for, render_template
-from json import loads as json_loads, dumps as json_dumps
+from flask import redirect, url_for, render_template
+from json import dumps as json_dumps
 from ..common.auth import login_required, CSRF_protection, get_csrf_token
-from ..common.errors import (NoResult, MissingRequiredFields, NotAuthenticated, MissingClientId,
+from ..common.errors import (MissingRequiredFields, NotAuthenticated, MissingClientId,
                              NotAuthorized, InvalidGrantType, InvalidResponseType)
-from ..common.utils import (random_string, add_args, object_json, hash, get_form, get_arg, get_param,
-                            optional_args)
+from ..common.utils import (add_args, get_form, get_param, optional_args)
 from .. import api, app, session
 
 @app.route('/oauth/token', methods=["POST"])
@@ -52,8 +51,8 @@ def authorize(cookie):
     optional_args(kwargs, state=state)
 
     try:
-        authorization = api.get_authorization(client_id,
-                                              session["username"])
+        api.get_authorization(client_id,
+                              session["username"])
         return authorize_post()
     except NotAuthorized:
         pass
@@ -76,11 +75,11 @@ def authorize_post(cookie):
     state = get_param("state")
 
     try:
-        authorization = api.get_authorization(client_id,
-                                              session["username"])
+        api.get_authorization(client_id,
+                              session["username"])
     except NotAuthorized:
-        authorization = api.set_authorization(client_id,
-                                              session["username"])
+        api.set_authorization(client_id,
+                              session["username"])
 
     application = api.get_application(client_id)
     access = api.set_tokens(client_id,

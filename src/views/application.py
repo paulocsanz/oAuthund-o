@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for
-from ..common.utils import random_string, get_form, get_arg
+from ..common.errors import MissingRequiredFields
+from ..common.utils import get_form, get_arg
 from ..common.auth import login_required, CSRF_protection, get_csrf_token
 from .. import api, app, session
 

@@ -165,7 +165,7 @@ class EncryptedSession(dict):
         self._reencrypt_if_changed()
         return ret
 
-    def update(**other):
+    def update(self, **other):
         self._decrypt_if_not()
         ret = g._decrypted_session.update(**other)
         self._reencrypt_if_changed()
