@@ -1,6 +1,6 @@
 from flask import render_template, send_file
 from ..common.errors import NoResult, MissingRequiredFields
-from ..common.auth import login_required, OAuth_authentication, get_access_token
+from ..common.auth import login_required, OAuth_authentication, get_access_token, get_csrf_token
 from ..common.utils import object_json, random_string
 from .. import api, app, session
 
@@ -11,7 +11,7 @@ def home(cookie):
 
     try:
         authorizations = api.get_authorizations(user.username)
-    except NoResult:
+    except NotAuthorized:
         authorizations = None
 
     try:
@@ -19,7 +19,7 @@ def home(cookie):
     except NoResult:
         apps = None
     return render_template('profile.html',
-                           csrf_token=session.get("csrf_token") or random_string(app.config["CODE_SIZE"]),
+                           csrf_token=get_csrf_token(),
                            user=user,
                            apps=apps,
                            authorizations=authorizations)

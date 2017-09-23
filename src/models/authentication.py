@@ -27,14 +27,14 @@ class Authentication:
                     hash(self.refresh_token),
                     self.encrypted_password)
 
-    def retrieve_password(refresh_token):
+    def retrieve_username, password(refresh_token):
         with DB() as db:
-            encrypted_password = db.find_value(
-                    "SELECT encrypted_password "
+            username, encrypted_password = db.find_value(
+                    "SELECT username, encrypted_password "
                     "FROM authentications "
                     "WHERE refresh_token_hash = %s;",
                     hash(refresh_token))
-        return decrypt(refresh_token, encrypted_password)
+        return username, decrypt(refresh_token, encrypted_password)
 
     def retrieve_cookie(access_token):
         with DB() as db:

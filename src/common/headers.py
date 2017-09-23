@@ -38,26 +38,30 @@ class SecureHeader:
             response.headers['Content-Security-Policy'] = (
                 "default-src 'none'; "
                 "script-src 'none'; "
+                "worker-src 'none'; "
                 "style-src 'self'; "
-                "img-src 'self' https://sigadocker.ufrj.br:8090/; "
+                "img-src 'self'; "
                 "connect-src 'none'; "
                 "font-src 'none'; "
                 "object-src 'none'; "
-                "media-src 'self'; "
+                "media-src 'none'; "
                 "sandbox allow-forms; "
                 "report-uri '{}'; "
+                "frame-src 'none'; "
                 "child-src 'none'; "
                 "form-action 'self'; "
                 "frame-ancestors 'none'; "
                 .format(url_for('csp_report')))
             response.headers['Server'] = ''
-            response.headers.pop('ETag', None)
             return response
 
         # If the rules are broken log warning request made by the browser
         @app.route('/csp_report', methods=["POST"])
         def csp_report():
-            app.config['log'].json("CSP_REPORT [GET]", dict(request.args))
-            app.config['log'].json("CSP_REPORT [POST]", dict(request.form))
-            return 'OK', 200
-
+            try:
+                app.config['log'].json("CSP_REPORT", {"user_agent": request.META["HTTP_USER_AGENT"],
+                                                      "remote_addr": request.META["REMOTE_ADDR"},
+                                                      "report": request.body})
+            except ValueError:
+                return 'Bad Request', 400
+            return 'OK', 204

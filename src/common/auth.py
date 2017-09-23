@@ -6,11 +6,19 @@ from .errors import NotAuthenticated, NoResult, CSRFDetected, NoAccessToken, Inv
 from ..models import Authentication
 
 SESSION_EXPIRATION = None
+TOKEN_SIZE = None
 session = None
 def ConfigAuth(app, _session):
-    global session, SESSION_EXPIRATION
+    global session, SESSION_EXPIRATION, TOKEN_SIZE
     session = _session
-    SESSION_EXPIRATION =  app.config["SESSION_EXPIRATION"]
+    SESSION_EXPIRATION = app.config["SESSION_EXPIRATION"]
+    TOKEN_SIZE = app.config["TOKEN_SIZE"]
+
+def get_csrf_token():
+    global session
+    session["csrf_token"] = (session.get("csrf_token")
+                             or random_string(TOKEN_SIZE))
+    return session["csrf_token"]
 
 def login_session(auth, username):
     global session

@@ -40,3 +40,24 @@ class NoAccessToken(OAuth2Error):
 
 class InvalidToken(OAuth2Error):
     pass
+
+class InvalidClientId(OAuth2Error):
+    pass
+
+class InvalidCodeOrClientSecret(OAuth2Error):
+    pass
+
+class NotAuthorized(OAuth2Error):
+    pass
+
+class InvalidAccessToken(OAuth2Error):
+    pass
+
+class InvalidRefreshToken(OAuth2Error):
+    pass
+
+class InvalidGrantType(OAuth2Error):
+    pass
+
+class InvalidResponseType(OAuth2Error):
+    pass

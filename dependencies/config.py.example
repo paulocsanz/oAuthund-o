@@ -4,29 +4,26 @@ class Config:
     HOST = "localhost"
     PORT = 3000
 
-    MYSQL_HOST = "localhost"
-    MYSQL_DB = "sigalogado"
-    MYSQL_USER = ""
-    MYSQL_PASSWORD = ""
-
+    # Defaults to stdout
     LOG_FILE = None
 
-    CODE_SIZE = 30
-
-    # Tokens (cookies) encryption/sign key - empty not accepted in production
-    # If leaked, reset it and restart the server to prevent unauthorized actions
-
-    ### RUN `bash dependencies/random_base64.sh` and copy the result printed ###
-    ### IF NOT AT LEAST MAKE IT 50 RANDOM CHARACTERS (YOU DON'T NEED TO KNOW THE PASSWORD) ###
-    SECRET_KEY = ""
-    MAX_CONTENT_LENGTH = 1024 * 1024 * 16 # 16MB
-
-    # Example 2017-07-19 13:20:30
+    # Example 2017-07-19 13:20:30 or 19/07/2017 13:20:30
     # Change it as appropriate
-    DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+    #DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+    DATE_FORMAT = "%d/%m/%Y %H:%M:%S"
 
-    # In seconds
-    SESSION_EXPIRATION = 60 * 60 * 24
-    SESSION_RENEW_WHEN_MISSING = 60 * 60 * 3
 
-    CLIENT_ID_LENGTH = 18
+    SESSION_EXPIRATION = 7200
+    MAX_CONTENT_LENGTH = 1024 * 1024 * 1 # 1MB
+
+
+    ################################################
+    ### Automatically generated, don't change it ###
+    ################################################
+
+    MYSQL_HOST = "localhost"
+    MYSQL_DB = "sigalogado"
+    MYSQL_USER = "<MYSQL_USER>"
+    MYSQL_PASSWORD = "<MYSQL_PASSWORD>"
+
+    SECRET_KEY = "<SECRET_KEY>"

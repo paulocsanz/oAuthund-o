@@ -10,8 +10,8 @@ class Application:
         self.creator_username = creator_username
         self.description = description
         self.redirect_uri = redirect_uri
-        self.client_id = client_id or random_string(app.config["CLIENT_ID_LENGTH"])
-        self.client_secret = client_secret or random_string(app.config["CLIENT_ID_LENGTH"])
+        self.client_id = client_id or random_string(app.config["TOKEN_SIZE"])
+        self.client_secret = client_secret or random_string(app.config["TOKEN_SIZE"])
 
     def save(self):
         with DB() as db:

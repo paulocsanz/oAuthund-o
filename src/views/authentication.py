@@ -1,17 +1,16 @@
 from flask import request, render_template, redirect, url_for
-from ..common.utils import random_string, add_arg
-from ..common.auth import is_auth, login_required, login_session, CSRF_protection
-from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated
+from ..common.utils import random_string, add_arg, get_arg, get_form, optional_args
+from ..common.auth import is_auth, login_required, login_session, CSRF_protection, get_csrf_token
+from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated, InvalidClientId
 from .. import api, app, session
 
 @app.route('/login')
 def login():
-    state = request.args.get("state") or ""
-    client_id = request.args.get("client_id") or ""
-    kwargs = {}
+    state = get_arg("state")
+    client_id = get_arg("client_id")
 
-    if state != "":
-        kwargs["state"] = state
+    kwargs = {}
+    optional_args(kwargs, state=state)
 
     try:
         is_auth()
@@ -25,24 +24,23 @@ def login():
 
     try:
         if client_id == "":
-            raise NoResult()
+            raise InvalidClientId()
 
         application = api.get_application(client_id)
-    except NoResult:
+    except InvalidClientId:
         application = None
 
-    kwargs["crsf_token"] = session["csrf_token"] = (session.get("csrf_token")
-                                                    or random_string(app.config["CODE_SIZE"]))
+    kwargs["crsf_token"] =  get_csrf_token()
     kwargs["app"] = application
     return render_template("login.html", **kwargs)
 
 @app.route('/login', methods=["POST"])
 @CSRF_protection
 def login_post():
-    state = request.form.get("state") or ""
-    client_id = request.form.get("client_id") or ""
-    username = request.form.get("username") or ""
-    password = request.form.get("password") or ""
+    state = get_form("state")
+    client_id = get_form("client_id")
+    username = get_form("username")
+    password = get_form("password")
 
     if "" in [username, password]:
         raise MissingRequiredFields()
@@ -51,10 +49,9 @@ def login_post():
     login_session(auth, username)
 
     kwargs = {}
-    if client_id != "":
-        kwargs["client_id"] = client_id
-    if state != "":
-        kwargs["state"] = state
+    optional_args(kwargs,
+                  client_id=client_id,
+                  state=state)
 
     if session.get("next") is not None:
         url = add_arg(session.pop("next"), **kwargs)

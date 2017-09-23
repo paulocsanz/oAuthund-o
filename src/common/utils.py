@@ -1,4 +1,5 @@
 from datetime import datetime
+from flask import request
 from json import dumps as json_dumps
 from random import SystemRandom
 from string import ascii_letters, digits
@@ -18,6 +19,20 @@ def ConfigUtils(app):
     app.jinja_env.filters['int'] = int_or_zero
     app.jinja_env.filters['str'] = str_or_empty
     app.jinja_env.filters['optional'] = optional
+
+def get_param(key):
+    return get_form(key) or get_arg(key)
+
+def get_form(key):
+    return request.form.get(key) or ""
+
+def get_arg(key):
+    return request.arg.get(key) or ""
+
+def optional_args(_dict, **kwargs):
+    for k, v in kwargs:
+        if v != "" and v is not None:
+            _dict[k] = v
 
 def optional(txt):
     return txt if txt is not None else ""

@@ -5,6 +5,7 @@ from .common import InitializeLib
 from .common.db import DB
 from ..config import Config
 
+# Pass config values to Flask config
 for key, value in Config.__dict__.items():
     if not (key.startswith("__") and key.endswith("__")):
         app.config[key] = value

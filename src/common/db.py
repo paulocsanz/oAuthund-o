@@ -20,7 +20,7 @@ from .errors import NoResult, UnexpectedError, InsertFailed, NoDBConfig
 from codecs import register, lookup
 
 # Make MySQL's utf8mb4 an alias for utf-8 in python, since MySQL's utf-8 is broken
-# utf-8 uses 3 bytes in MySQL, when it regularly uses 4 bytes (basically excludes emojis)
+# utf-8 uses 3 bytes in MySQL, when it regularly uses up to 4 bytes (basically excludes emojis)
 register(lambda name: lookup("utf8") if name == 'utf8mb4' else None)
 
 app = None
@@ -146,4 +146,3 @@ class DB:
     def _value(response):
         if not is_empty(response) and not is_empty(response[0]):
             return response[0][0]
-

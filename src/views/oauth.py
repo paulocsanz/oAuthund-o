@@ -1,20 +1,31 @@
 from flask import request, redirect, url_for, render_template
 from json import loads as json_loads, dumps as json_dumps
-from ..common.auth import login_required, CSRF_protection
-from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated, MissingClientId
-from ..common.utils import random_string, add_arg, object_json, hash
+from ..common.auth import login_required, CSRF_protection, get_csrf_token
+from ..common.errors import (NoResult, MissingRequiredFields, NotAuthenticated, MissingClientId,
+                             NotAuthorized, InvalidGrantType, InvalidResponseType)
+from ..common.utils import (random_string, add_arg, object_json, hash, get_form, get_arg, get_param,
+                            optional_args)
 from .. import api, app, session
 
 @app.route('/oauth/token', methods=["POST"])
-def tokens():
-    # Ignores grant_type, since endpoint only does this
-    code = request.form.get("code") or ""
-    client_id = request.form.get("client_id") or ""
-    client_secret = request.form.get("client_secret") or ""
-    access_token, refresh_token = api.get_tokens(code, client_id, client_secret)
+def token():
+    grant_type = get_form("grant_type")
+    code = get_form("code")
+    client_id = get_form("client_id")
+    client_secret = get_form("client_secret")
 
-    username = api.get_username(access_token)
-    password = api.get_password(refresh_token)
+    if grant_type == "authorization_code":
+        access_token, refresh_token = api.get_tokens(code, client_id, client_secret)
+        username, password = api.get_username_password(refresh_token)
+    elif grant_type == "refresh_token":
+        refresh_token = code
+        username, password = api.get_username_password(refresh_token)
+
+        auth = api.authenticate(username, password)
+        access_token, refresh_token = auth.access_token, auth.refresh_token
+    else:
+        raise InvalidGrantType()
+
     api.authenticate(username,
                      password,
                      access_token,
@@ -27,47 +38,47 @@ def tokens():
 @app.route('/oauth/authorize')
 @login_required
 def authorize(cookie):
-    # Ignores response_type, since this endpoint only does this
-    state = request.args.get("state") or request.form.get("state") or ""
-    client_id = request.args.get("client_id") or request.form.get("client_id") or ""
+    response_type = get_param("response_type")
+    state = get_param("state")
+    client_id = get_param("client_id")
+
+    if response_type != "code":
+        raise InvalidResponseType
+
+    if client_id == "":
+        raise MissingClientId()
 
     kwargs = {}
-    if state != "":
-        kwargs["state"] = state
-
-    if client_id != "":
-        kwargs["app"] = api.get_application(client_id)
-    else:
-        raise MissingClientId()
+    optional_args(kwargs, state=state)
 
     try:
         authorization = api.get_authorization(client_id,
                                               session["username"])
         return authorize_post()
-    except NoResult:
+    except NotAuthorized:
         pass
 
     try:
         kwargs["user"] = api.get_user(session["username"], cookie)
-    except NoResult:
+    except NotAuthenticated:
         kwargs["client_id"] = client_id
         return redirect(url_for('login', **kwargs))
 
-    kwargs["csrf_token"] = session["csrf_token"] = (session.get("csrf_token")
-                                                    or random_string(app.config["CODE_SIZE"]))
+    kwargs["app"] = api.get_application(client_id)
+    kwargs["csrf_token"] = get_csrf_token()
     return render_template('authorize.html', **kwargs)
 
 @app.route('/oauth/authorize', methods=["POST"])
 @CSRF_protection
 @login_required
 def authorize_post(cookie):
-    client_id = request.form.get("client_id") or request.args.get("client_id") or ""
-    state = request.form.get("state") or request.args.get("state") or ""
+    client_id = get_param("client_id")
+    state = get_param("state")
 
     try:
         authorization = api.get_authorization(client_id,
                                               session["username"])
-    except NoResult:
+    except NotAuthorized:
         authorization = api.set_authorization(client_id,
                                               session["username"])
 
@@ -76,17 +87,17 @@ def authorize_post(cookie):
                             session["access_token"],
                             session["refresh_token"])
     kwargs = {"code": access.code}
-
-    if state != "":
-        kwargs["state"] = state
+    optional_args(kwargs, state=state)
     return redirect(add_arg(application.redirect_uri, **kwargs))
 
 @app.route('/delete/authorization', methods=["POST"])
 @CSRF_protection
 @login_required
 def delete_authorization(cookie):
-    client_id = request.form.get("client_id") or ""
+    client_id = get_form("client_id")
+
     if client_id == "":
         raise MissingRequiredFields()
+
     api.delete_authorization(session["username"], client_id)
     return redirect(url_for("home"))
