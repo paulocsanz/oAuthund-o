@@ -2,7 +2,7 @@ from flask import request
 from functools import wraps
 from datetime import datetime
 from .utils import random_string
-from .errors import NotAuthenticated, NoResult, CSRFDetected, NoAccessToken, InvalidToken
+from .errors import NotAuthenticated, NoResult, CSRFDetected, MissingAccessToken, InvalidAccessToken
 from ..models import Authentication
 
 SESSION_EXPIRATION = None
@@ -85,10 +85,10 @@ def OAuth_authentication(f):
     def wrap(*args, **kwargs):
         access_token = get_access_token()
         if access_token == "":
-            raise NoAccessToken()
+            raise MissingAccessToken()
         try:
             cookie = Authentication.retrieve_cookie(access_token)
         except NoResult:
-            raise InvalidToken()
+            raise InvalidAccessToken()
         return f(cookie, *args, **kwargs)
     return wrap

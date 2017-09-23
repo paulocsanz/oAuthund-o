@@ -8,12 +8,6 @@ def authenticate(username, password, access_token=None, refresh_token=None):
     auth.save()
     return auth
 
-def get_cookie(access_token):
-    try:
-        return Authentication.retrieve_cookie(access_token)
-    except NoResult:
-        raise InvalidAccessToken()
-
 def get_username_password(refresh_token):
     try:
         return Authentication.retrieve_username_password(refresh_token)

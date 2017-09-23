@@ -3,7 +3,7 @@ from flask import request
 from json import dumps as json_dumps
 from random import SystemRandom
 from string import ascii_letters, digits
-from cryptography.fernet import Fernet, InvalidToken
+from cryptography.fernet import Fernet
 from .errors import NoDateFormat
 from hashlib import sha256
 import re
@@ -106,9 +106,9 @@ def now_timestamp():
 
 def random_string(size, chars=ascii_letters+digits+'-_'):
     return ''.join(SystemRandom().choice(chars)
-            for i in range(size))
+            for _ in range(size))
 
-def add_arg(uri, **kwargs):
+def add_args(uri, **kwargs):
     char = "&" if "?" in uri else "?"
     for key, value in kwargs.items():
         uri += "{}{}={}".format(char, key, value)

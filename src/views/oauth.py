@@ -3,7 +3,7 @@ from json import loads as json_loads, dumps as json_dumps
 from ..common.auth import login_required, CSRF_protection, get_csrf_token
 from ..common.errors import (NoResult, MissingRequiredFields, NotAuthenticated, MissingClientId,
                              NotAuthorized, InvalidGrantType, InvalidResponseType)
-from ..common.utils import (random_string, add_arg, object_json, hash, get_form, get_arg, get_param,
+from ..common.utils import (random_string, add_args, object_json, hash, get_form, get_arg, get_param,
                             optional_args)
 from .. import api, app, session
 
@@ -88,7 +88,7 @@ def authorize_post(cookie):
                             session["refresh_token"])
     kwargs = {"code": access.code}
     optional_args(kwargs, state=state)
-    return redirect(add_arg(application.redirect_uri, **kwargs))
+    return redirect(add_args(application.redirect_uri, **kwargs))
 
 @app.route('/delete/authorization', methods=["POST"])
 @CSRF_protection

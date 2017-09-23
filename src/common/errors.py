@@ -1,22 +1,3 @@
-class NotAuthenticated(Exception):
-    def __str__(self):
-        return "Por favor, se autentique com o sigalogado para continuar"
-
-class MissingRequiredFields(Exception):
-    pass
-
-class UserNotFound(Exception):
-    pass
-
-class ProtocolError(Exception):
-    pass
-
-class NoResult(Exception):
-    pass
-
-class UnexpectedError(Exception):
-    pass
-
 class InsertFailed(Exception):
     pass
 
@@ -26,38 +7,74 @@ class NoDBConfig(Exception):
 class NoDateFormat(Exception):
     pass
 
-class CSRFDetected(Exception):
+
+class InvalidToken(Exception):
+    code = 400
+
+class NotAuthenticated(Exception):
+    code = 403
+    error_description = "Please sign-in first"
+
+class MissingRequiredFields(Exception):
+    code = 400
+
+class NoResult(Exception):
+    code = 404
+
+class UserNotFound(NoResult):
     pass
+
+class UnexpectedError(Exception):
+    code = 500
+
+class CSRFDetected(Exception):
+    code = 403
 
 class OAuth2Error(Exception):
+    error = "server_error"
+    error_description = "OAuth2 Protocol Error"
+
+class DisplayError(OAuth2Error):
     pass
 
-class MissingClientId(OAuth2Error):
-    pass
+class RedirectError(OAuth2Error):
+    def __init__(self, redirect_uri):
+        self.redirect_uri = redirect_uri
 
-class NoAccessToken(OAuth2Error):
-    pass
+class MissingParameter(DisplayError):
+    error = "invalid_request"
+    error_description = "Missing Parameter"
 
-class InvalidToken(OAuth2Error):
-    pass
+class MissingClientId(DisplayError):
+    error_description = "Missing Client Id"
 
-class InvalidClientId(OAuth2Error):
-    pass
+class MissingAccessToken(DisplayError):
+    error_description = "Missing Access Token"
 
-class InvalidCodeOrClientSecret(OAuth2Error):
-    pass
+class InvalidParameter(RedirectError):
+    error = "invalid_request"
+    error_description = "Invalid Parameter"
+
+class InvalidClientId(DisplayError):
+    # We don't have the redirect_uri, so we have to display it
+    error_description = "Invalid Client Id"
+
+class InvalidCodeOrClientSecret(InvalidParameter):
+    error_description = "Invalid Code or Client Secret"
+
+class InvalidAccessToken(InvalidParameter):
+    error_description = "Invalid Access Token"
+
+class InvalidRefreshToken(InvalidParameter):
+    error_description = "Invalid Refresh Token"
+
+class InvalidGrantType(InvalidParameter):
+    error_description = "Invalid Grant Type"
+
+class InvalidResponseType(InvalidParameter):
+    error = "unsupported_response_type"
+    error_description = "Only 'code' is allowed as 'response_type'"
 
 class NotAuthorized(OAuth2Error):
-    pass
-
-class InvalidAccessToken(OAuth2Error):
-    pass
-
-class InvalidRefreshToken(OAuth2Error):
-    pass
-
-class InvalidGrantType(OAuth2Error):
-    pass
-
-class InvalidResponseType(OAuth2Error):
-    pass
+    error = "unauthorized_client"
+    error_description = "The application was not authorized to access user's data"

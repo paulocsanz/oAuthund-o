@@ -1,5 +1,5 @@
 from flask import request, render_template, redirect, url_for
-from ..common.utils import random_string, add_arg, get_arg, get_form, optional_args
+from ..common.utils import random_string, add_args, get_arg, get_form, optional_args
 from ..common.auth import is_auth, login_required, login_session, CSRF_protection, get_csrf_token
 from ..common.errors import NoResult, MissingRequiredFields, NotAuthenticated, InvalidClientId
 from .. import api, app, session
@@ -54,7 +54,7 @@ def login_post():
                   state=state)
 
     if session.get("next") is not None:
-        url = add_arg(session.pop("next"), **kwargs)
+        url = add_args(session.pop("next"), **kwargs)
     elif client_id == "":
         url = url_for("home")
     else:

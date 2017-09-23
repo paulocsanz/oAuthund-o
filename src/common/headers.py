@@ -60,7 +60,7 @@ class SecureHeader:
         def csp_report():
             try:
                 app.config['log'].json("CSP_REPORT", {"user_agent": request.META["HTTP_USER_AGENT"],
-                                                      "remote_addr": request.META["REMOTE_ADDR"},
+                                                      "remote_addr": request.META["REMOTE_ADDR"],
                                                       "report": request.body})
             except ValueError:
                 return 'Bad Request', 400

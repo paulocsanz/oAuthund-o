@@ -1,6 +1,6 @@
 from .. import app
 from . import DB
-from ..common.utils import fernet_key, encrypt, decrypt, InvalidToken, hash
+from ..common.utils import fernet_key, encrypt, decrypt, hash
 
 class Authentication:
     def __init__(self, username, password, cookie, id = None, access_token = None, refresh_token = None, is_encrypted=False):
@@ -27,7 +27,7 @@ class Authentication:
                     hash(self.refresh_token),
                     self.encrypted_password)
 
-    def retrieve_username, password(refresh_token):
+    def retrieve_username_password(refresh_token):
         with DB() as db:
             username, encrypted_password = db.find_value(
                     "SELECT username, encrypted_password "
