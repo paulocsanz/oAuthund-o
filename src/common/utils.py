@@ -6,6 +6,7 @@ from string import ascii_letters, digits
 from cryptography.fernet import Fernet
 from .errors import NoDateFormat
 from hashlib import sha256
+from fake_useragent import UserAgent
 import re
 
 def ConfigUtils(app):
@@ -122,5 +123,14 @@ def object_json(obj):
                         or callable(k))}
     return json_dumps(attrs)
 
-def _photo_uri(photo_id):
-    return "https://sigadocker.ufrj.br:8090/{}".format(photo_id)
+ua = UserAgent()
+last_ua = now_timestamp()
+
+def get_header():
+    global ua, last_ua
+    if now_timestamp() - last_ua > SESSION_EXPIRATION:
+        last_ua = now_timestamp()
+        ua.update()
+    print(ua)
+    return ua["google chrome"]
+    

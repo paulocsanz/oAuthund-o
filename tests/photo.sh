@@ -1,1 +1,1 @@
-wget --post-data="access_token=$1" localhost:3000/user/profile.png
+wget --post-data="access_token=$1" localhost:5000/user/profile.png

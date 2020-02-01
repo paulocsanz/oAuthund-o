@@ -6,6 +6,7 @@ from .. import api, app, session
 
 @app.route('/login')
 def login():
+    global session
     state = get_arg("state")
     client_id = get_arg("client_id")
 

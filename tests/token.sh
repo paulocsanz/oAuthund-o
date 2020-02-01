@@ -1,1 +1,1 @@
-wget --post-data="code=$1&client_id=QZM6H3dtajJMvmBJhSCsZPB8ZlskWTuXzbTosA5u8Bsze0mlKOTsm_qzK8p_Pmc_&client_secret=y2zbASYTzwUWiRnpS4B2wEdSYi7CppvkbXRWjefp2HP5ShHKZj6BBKjY0OZtXyRr&redirect_uri=asdas" localhost:5000/oauth/token
+wget --post-data="code=$1&client_id=n9oeqe3oX1KhDsH4kA_iVqOmjbBgkaJ9kCbkvRUBT0jQgbdTyVBFr5rZjksmRak9&client_secret=YDTBarcgbfOhc-6_gi5aQ-PSuqfAxvMq1SaFm9-UF6cvYtiOvUUOFUeahQ6hxPZT" localhost:5000/oauth/token

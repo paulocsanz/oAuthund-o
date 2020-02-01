@@ -11,7 +11,7 @@ def home(cookie):
 
     try:
         authorizations = api.get_authorizations(user.username)
-    except NotAuthorized:
+    except (NotAuthorized, NoResult):
         authorizations = None
 
     try:

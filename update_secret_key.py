@@ -7,7 +7,7 @@ def random_string(size, chars=ascii_letters+digits+'-_'):
     return ''.join(SystemRandom().choice(chars)
             for i in range(size))
 
-with open("config.py", "r") as f:
+with open("src/config.py", "r") as f:
     content = f.read()
 
 key = random_string(KEY_SIZE)

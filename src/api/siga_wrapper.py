@@ -3,7 +3,7 @@ from werkzeug.exceptions import InternalServerError
 from requests import get, post
 from io import BytesIO
 from ..common.errors import UserNotFound, NotAuthenticated
-from ..common.utils import format_title, _photo_uri
+from ..common.utils import format_title
 
 def login(username, password):
     uri = "https://portalaluno.ufrj.br/Portal/acesso"
@@ -25,6 +25,8 @@ def login(username, password):
         }
     )
     try:
+        print(req_post.status_code)
+        print(req_post.text)
         return req_post.cookies["gnosys-token"]
     except KeyError:
         raise UserNotFound()
@@ -49,9 +51,17 @@ def get_user(cookie):
     return name, avatar_id_list[0]["value"]
 
 def get_user_photo(cookie, photo_id):
-    uri = _photo_uri(photo_id)
+    uri = "https://portalaluno.ufrj.br/Portal/inicial"
     req = get(uri,cookies={"gnosys-token": cookie})
     if req.status_code != 200:
         raise InternalServerError(req.status_code)
 
+    soup = BeautifulSoup(req.content.decode('utf-8'), "html.parser")
+    avatar_id_list = soup.select("#avatarId")
+    if len(avatar_id_list) < 1:
+        raise NotAuthenticated()
+
+    req = get("https://sigadocker.ufrj.br/fotos/" + avatar_id_list[0]["value"])
+    if req.status_code != 200:
+        raise InternalServerError(req.status_code)
     return BytesIO(req.content)

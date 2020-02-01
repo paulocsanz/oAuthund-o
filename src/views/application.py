@@ -40,10 +40,10 @@ def application(cookie):
 @CSRF_protection
 @login_required
 def delete_application(cookie):
-    client_id = get_arg("client_id")
+    client_id = get_form("client_id")
 
     if client_id == "":
-        raise MissingRequiredFields()
+        raise MissingRequiredFields("client_id")
 
     api.delete_app(session["username"],
                    client_id)

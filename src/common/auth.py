@@ -5,20 +5,30 @@ from .utils import random_string
 from .errors import NotAuthenticated, NoResult, CSRFDetected, MissingAccessToken, InvalidAccessToken
 from ..models import Authentication
 
+CSRF_TOKEN_EXPIRATION = None
 SESSION_EXPIRATION = None
 TOKEN_SIZE = None
 session = None
 def ConfigAuth(app, _session):
-    global session, SESSION_EXPIRATION, TOKEN_SIZE
+    global session, SESSION_EXPIRATION, TOKEN_SIZE, CSRF_TOKEN_EXPIRATION
     session = _session
+    CSRF_TOKEN_EXPIRATION = app.config["CSRF_TOKEN_EXPIRATION"]
     SESSION_EXPIRATION = app.config["SESSION_EXPIRATION"]
     TOKEN_SIZE = app.config["TOKEN_SIZE"]
 
 def get_csrf_token():
+    global session, CSRF_TOKEN_EXPIRATION
+    if session.get("csrf_token") is None:
+        set_csrf_token()
+
+    if datetime.now().timestamp() - session["csrf_token"]["time"] > CSRF_TOKEN_EXPIRATION:
+        set_csrf_token()
+
+    return session["csrf_token"]["value"]
+
+def set_csrf_token():
     global session
-    session["csrf_token"] = (session.get("csrf_token")
-                             or random_string(TOKEN_SIZE))
-    return session["csrf_token"]
+    session["csrf_token"] = { "value": random_string(20), "time": datetime.now().timestamp() }
 
 def login_session(auth, username):
     global session
@@ -38,11 +48,11 @@ def logout_session():
 
 def is_auth():
     global session
-    username = session.get("username") or ""
-    expiration = session.get("expiration") or ""
-    access_token = session.get("access_token") or ""
+    username = session.get("username")
+    expiration = session.get("expiration")
+    access_token = session.get("access_token")
 
-    if "" in [username, expiration, access_token]:
+    if None in [username, expiration, access_token]:
         raise NotAuthenticated()
 
     try:
@@ -65,10 +75,9 @@ def CSRF_protection(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         _dict = request.form if request.method == "POST" else request.args
-        csrf = session.get("csrf_token") is not None
-        csrf = csrf and _dict.get("csrf_token") != session.get("csrf_token")
-        session["csrf_token"] = random_string(20)
-        if csrf:
+        session_token = get_csrf_token()
+        form_token = _dict.get("csrf_token") 
+        if session_token != form_token:
             raise CSRFDetected()
         return f(*args, **kwargs)
     return wrap

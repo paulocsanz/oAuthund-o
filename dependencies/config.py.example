@@ -13,10 +13,11 @@ class Config:
     DATE_FORMAT = "%d/%m/%Y %H:%M:%S"
 
 
-    SESSION_EXPIRATION = 7200
+    CSRF_TOKEN_EXPIRATION = 60 * 30
+    SESSION_EXPIRATION = 60 * 60 * 24 * 7
     MAX_CONTENT_LENGTH = 1024 * 1024 * 1 # 1MB
 
-    TOKEN_SIZE=64
+    TOKEN_SIZE = 32
 
     ################################################
     ### Automatically generated, don't change it ###
