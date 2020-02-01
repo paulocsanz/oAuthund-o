@@ -6,11 +6,17 @@
 {% endblock %}
 
 {% block content %}
-<h2>{{app.name}}</h2>
-<b>{{app.client_id}}</b>
+<h2>Name: {{app.name}}</h2>
+<b>Client Id: {{app.client_id}}</b>
 <p class='spoiler'>{{app.client_secret}}</p>
-<p>{{app.description}}</p>
-<a href="{{app.redirect_uri}}">{{app.redirect_uri}}</a>
+<p>Description: {{app.description}}</p>
+Url de redirecionamento: <a href="{{app.redirect_uri}}">{{app.redirect_uri}}</a>
+
+<form action="{{url_for('edit_app')}}">
+    <input type="hidden" name="client_id" value="{{app.client_id}}">
+    <input type="submit" value="Editar">
+</form>
+
 <form method="POST" action="{{url_for('delete_application')}}">
     <input type="hidden" name="client_id" value="{{app.client_id}}">
     <input type='hidden' name='csrf_token' value='{{csrf_token}}'>

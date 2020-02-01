@@ -14,17 +14,28 @@ class Application:
         self.client_secret = client_secret or random_string(app.config["TOKEN_SIZE"])
 
     def save(self):
-        with DB() as db:
-            self.id = db.insert(
-                    "INSERT INTO applications "
-                    "(creator_username, name, description, redirect_uri, client_id, client_secret) "
-                    "VALUES (%s, %s, %s, %s, %s, %s);",
-                    self.creator_username,
-                    self.name,
-                    self.description,
-                    self.redirect_uri,
-                    self.client_id,
-                    self.client_secret)
+        if self.id is None:
+            with DB() as db:
+                self.id = db.insert(
+                        "INSERT INTO applications "
+                        "(creator_username, name, description, redirect_uri, client_id, client_secret) "
+                        "VALUES (%s, %s, %s, %s, %s, %s);",
+                        self.creator_username,
+                        self.name,
+                        self.description,
+                        self.redirect_uri,
+                        self.client_id,
+                        self.client_secret)
+        else:
+            with DB() as db:
+                db.exec(
+                        "UPDATE applications "
+                        "SET name = %s, description = %s, redirect_uri = %s "
+                        "WHERE client_id = %s);"
+                        self.name,
+                        self.description,
+                        self.redirect_uri,
+                        self.client_id)
 
     def delete(username, client_id):
         with DB() as db:

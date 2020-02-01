@@ -10,6 +10,18 @@ def get_application(client_id):
     except NoResult:
         raise InvalidClientId()
 
+def edit_app(username, name, description, redirect_uri, client_id):
+    app = Application.find_by_client(client_id)
+
+    if app.username != username:
+        raise NotAuthorized()
+
+    app.name = name
+    app.description = description
+    app.redirect_id = redirect_id
+    app.save()
+    return app.client_id
+
 def register_app(username, name, description, redirect_uri):
     app = Application(username, name, description, redirect_uri)
     app.save()
