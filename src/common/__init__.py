@@ -18,13 +18,13 @@ from .session import EncryptedSession
 from .headers import SecureHeader
 from .db import ConfigDB
 from .utils import ConfigUtils
-from .auth import ConfigAuth
 from . import log
 
 session = None
 def InitializeLib(app):
     global session
 
+    ConfigDB(app, log)
     SecureHeader(app)
     ConfigUtils(app)
     log.ConfigLog(app)
@@ -33,5 +33,7 @@ def InitializeLib(app):
         app,
         log,
         debug_key=b'4444444444444444444444444444444444444444444=')
-    ConfigDB(app, log)
+
+    # Messes with DB, so it can only be imported after DB is confitured
+    from .auth import ConfigAuth
     ConfigAuth(app, session)

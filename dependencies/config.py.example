@@ -16,6 +16,7 @@ class Config:
     SESSION_EXPIRATION = 7200
     MAX_CONTENT_LENGTH = 1024 * 1024 * 1 # 1MB
 
+    TOKEN_SIZE=64
 
     ################################################
     ### Automatically generated, don't change it ###
@@ -23,7 +24,7 @@ class Config:
 
     MYSQL_HOST = "localhost"
     MYSQL_DB = "sigalogado"
-    MYSQL_USER = "<MYSQL_USER>"
+    MYSQL_USER = "sigalogado"
     MYSQL_PASSWORD = "<MYSQL_PASSWORD>"
 
     SECRET_KEY = "<SECRET_KEY>"

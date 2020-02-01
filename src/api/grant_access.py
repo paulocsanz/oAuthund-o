@@ -12,5 +12,5 @@ def get_tokens(code, client_id, client_secret):
         return GrantAccess.grant(code, client_id, client_secret)
     except NoResult:
         # Raises InvalidClientId if it doesn't exist
-        get_application(client_id)
-        raise InvalidCodeOrClientSecret()
+        app = get_application(client_id)
+        raise InvalidCodeOrClientSecret(app.redirect_uri)

@@ -2,7 +2,7 @@ from flask import Flask
 app = Flask(__name__)
 
 from .common import InitializeLib
-from ..config import Config
+from .config import Config
 
 # Pass config values to Flask config
 for key, value in Config.__dict__.items():
@@ -13,6 +13,8 @@ InitializeLib(app)
 from .common import session
 
 from . import views
-app.run(host=app.config["HOST"],
-        port=app.config["PORT"],
-        debug=app.config["DEBUG"])
+
+if __name__ == "__main__":
+    app.run(host=app.config["HOST"],
+            port=app.config["PORT"],
+            debug=app.config["DEBUG"])

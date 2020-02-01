@@ -26,6 +26,7 @@ def login_session(auth, username):
     session["refresh_token"] = auth.refresh_token
     session["username"] = username
     session["expiration"] = SESSION_EXPIRATION
+    session["client_id"] = "self"
 
 def logout_session():
     global session
@@ -33,6 +34,7 @@ def logout_session():
     session.pop("refresh_token", None)
     session.pop("username", None)
     session.pop("expiration", None)
+    session.pop("client_id", None)
 
 def is_auth():
     global session
@@ -63,7 +65,7 @@ def CSRF_protection(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         _dict = request.form if request.method == "POST" else request.args
-        csrf = session.get("crsf_token") is not None
+        csrf = session.get("csrf_token") is not None
         csrf = csrf and _dict.get("csrf_token") != session.get("csrf_token")
         session["csrf_token"] = random_string(20)
         if csrf:

@@ -30,7 +30,7 @@ def login():
     except InvalidClientId:
         application = None
 
-    kwargs["crsf_token"] =  get_csrf_token()
+    kwargs["csrf_token"] =  get_csrf_token()
     kwargs["app"] = application
     return render_template("login.html", **kwargs)
 

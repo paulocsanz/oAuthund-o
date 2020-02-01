@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 
-chmod +x rundev
 source .env/bin/activate
 env FLASK_APP=src/__init__.py flask run

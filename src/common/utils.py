@@ -27,10 +27,10 @@ def get_form(key):
     return request.form.get(key) or ""
 
 def get_arg(key):
-    return request.arg.get(key) or ""
+    return request.args.get(key) or ""
 
 def optional_args(_dict, **kwargs):
-    for k, v in kwargs:
+    for k, v in kwargs.items():
         if v != "" and v is not None:
             _dict[k] = v
 

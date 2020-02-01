@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS sigalogado.authorizations
     id            INT       NOT NULL AUTO_INCREMENT,
     client_id     CHAR(255) NOT NULL,
     username      CHAR(255) NOT NULL,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT    id        PRIMARY KEY(id)
 );
 
@@ -29,6 +30,7 @@ CREATE TABLE IF NOT EXISTS sigalogado.granted_accesses
     access_token  CHAR(255) NOT NULL,
     refresh_token CHAR(255) NOT NULL,
     valid         TINYINT   NOT NULL,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT  PRIMARY KEY(id)
 );
 
@@ -40,5 +42,6 @@ CREATE TABLE IF NOT EXISTS sigalogado.authentications
     encrypted_cookie   CHAR(255) NOT NULL,
     refresh_token_hash CHAR(255) NOT NULL,
     encrypted_password CHAR(255) NOT NULL,
+    created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT id      PRIMARY KEY(id)
 );

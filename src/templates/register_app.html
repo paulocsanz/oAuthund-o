@@ -12,6 +12,7 @@
     <input type="text" name="description" />
     <h4>URI de redirecionamento - protocolo OAuth2 (*)</h4>
     <input type="text" name="redirect_uri" />
+    <input type='hidden' name='csrf_token' value='{{csrf_token}}'>
     <input type="submit" value="Cadastrar" />
 </form>
 {% endblock %}
