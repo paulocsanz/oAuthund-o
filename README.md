@@ -39,11 +39,8 @@ If it fails while installing flask-mysqldb because of `mysql_config` the mysql c
 
 To run it locally on linux execute:
 
-`./rundev`
+`./rundev.sh`
 
-On windows join the virtualenv and execute:
+On windows execute:
 
-```
-set FLASK_APP=src/__init__.py
-flask run
-```
+`./Rundev.ps1`
