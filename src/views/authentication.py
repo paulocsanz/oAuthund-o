@@ -4,9 +4,14 @@ from ..common.auth import is_auth, login_session, CSRF_protection, get_csrf_toke
 from ..common.errors import MissingRequiredFields, NotAuthenticated, InvalidClientId
 from .. import api, app, session
 
+@app.route('/logout', methods=["POST"])
+def logout():
+    global session
+    session.clear()
+    return redirect(url_for("login"))
+
 @app.route('/login')
 def login():
-    global session
     state = get_arg("state")
     client_id = get_arg("client_id")
 

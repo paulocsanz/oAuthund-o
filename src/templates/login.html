@@ -1,13 +1,16 @@
 {% extends 'menu.html' %}
 
-{% block menu %}
-<li><a href="{{url_for('register_app')}}">Cadastrar Aplicação</a></li>
-{% endblock %}
-
 {% block content %}
-<form method="POST">
-    <input type="text" name="username" />
-    <input type="password" name="password" />
+<form method="POST" class="center login">
+    <div>
+        <label for="username">Login do SIGA</label>
+        <input id="username" type="text" name="username" />
+    </div>
+
+    <div>
+        <label for="password" title="A senha é armazenada criptografada no servidor, e a chave fica com o usuário. A chave só é enviada para o servidor quando necessário acessar algo e a senha é descriptograda apenas em memória, mas nada é salvo no banco de dados">Senha do SIGA</label>
+        <input id="password" type="password" name="password" />
+    </div>
     <input type='hidden' name='csrf_token' value='{{csrf_token}}'>
     <input type="hidden" name="state" value="{{state}}">
     {% if app %}

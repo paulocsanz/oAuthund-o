@@ -4,8 +4,10 @@ from requests import get, post
 from io import BytesIO
 from ..common.errors import UserNotFound, NotAuthenticated
 from ..common.utils import format_title
+from flask import session
 
 def login(username, password):
+    global session
     uri = "https://portalaluno.ufrj.br/Portal/acesso"
     req_get = get(uri)
     if req_get.status_code != 200:
@@ -25,8 +27,6 @@ def login(username, password):
         }
     )
     try:
-        print(req_post.status_code)
-        print(req_post.text)
         return req_post.cookies["gnosys-token"]
     except KeyError:
         raise UserNotFound()

@@ -13,6 +13,7 @@
             {% block menu %}
             {% endblock %}
             </ul>
+            <form id="logout" action="/logout" method="post"><input type="submit" value="Logout" /></form>
         </div>
 
         {% if request.args.get("e") %}

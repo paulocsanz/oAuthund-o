@@ -48,7 +48,6 @@ class SecureHeader:
                 "sandbox allow-forms; "
                 "report-uri '{}'; "
                 "frame-src 'none'; "
-                "child-src 'none'; "
                 "form-action 'self'; "
                 "frame-ancestors 'none'; "
                 .format(url_for('csp_report')))

@@ -1,7 +1,6 @@
 from flask import request
 from functools import wraps
-from datetime import datetime
-from .utils import random_string
+from .utils import random_string, now_timestamp
 from .errors import NotAuthenticated, NoResult, CSRFDetected, MissingAccessToken, InvalidAccessToken
 from ..models import Authentication
 
@@ -21,14 +20,14 @@ def get_csrf_token():
     if session.get("csrf_token") is None:
         set_csrf_token()
 
-    if datetime.now().timestamp() - session["csrf_token"]["time"] > CSRF_TOKEN_EXPIRATION:
+    if now_timestamp() - session["csrf_token"]["time"] > CSRF_TOKEN_EXPIRATION:
         set_csrf_token()
 
     return session["csrf_token"]["value"]
 
 def set_csrf_token():
     global session
-    session["csrf_token"] = { "value": random_string(20), "time": datetime.now().timestamp() }
+    session["csrf_token"] = { "value": random_string(20), "time": now_timestamp() }
 
 def login_session(auth, username):
     global session
@@ -60,7 +59,7 @@ def is_auth():
     except NoResult:
         raise NotAuthenticated()
 
-    if expiration > datetime.now().timestamp():
+    if expiration > now_timestamp():
         raise NotAuthenticated()
     return cookie
 
