@@ -33,7 +33,7 @@ Run:
 
 `python3 install.py`
 
-If it fails while installing Flask-MySQL because `mysql_config` mysql client library is missing on your system (libmysqlclient-dev on Ubuntu).
+If it fails while installing flask-mysqldb because of `mysql_config` the mysql client library is probably missing on your system (libmysqlclient-dev on Ubuntu).
 
 ## Running
 
