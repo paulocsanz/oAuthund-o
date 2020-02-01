@@ -1,7 +1,5 @@
 # Sigalogado
 
-## This is mid refactoring, it won't work
-
 oAuth system for SIGA's (UFRJ) database
 
 ## Dependencies
@@ -29,11 +27,13 @@ CREATE USER 'sigalogado'@'localhost' IDENTIFIED BY '{YOUR-PASSWORD-HERE}';
 GRANT ALL PRIVILEGES ON *.* TO 'sigalogado'@'localhost';
 ```
 
+This is not the best sysadmin move, be careful with all those permissions. TODO: improve this.
+
 Run:
 
 `python3 install.py`
 
-If it fails while installing Flask-MySQL because of `mysql_config` mysql client library is missing on your system (libmysqlclient-dev on Ubuntu).
+If it fails while installing Flask-MySQL because `mysql_config` mysql client library is missing on your system (libmysqlclient-dev on Ubuntu).
 
 ## Running
 
