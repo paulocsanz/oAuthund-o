@@ -118,7 +118,7 @@ def add_args(uri, **kwargs):
 
 def object_json(obj):
     # Only public non-function attributes
-    attrs = {k:v for k, v in obj.__dict__.items()
+    attrs = {k:v for k, v in vars(obj).items()
                 if not (k.startswith("_")
                         or callable(k))}
     return json_dumps(attrs)

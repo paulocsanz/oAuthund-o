@@ -13,12 +13,12 @@ def get_application(client_id):
 def edit_app(username, name, description, redirect_uri, client_id):
     app = Application.find_by_client(client_id)
 
-    if app.username != username:
+    if app.creator_username != username:
         raise NotAuthorized()
 
     app.name = name
     app.description = description
-    app.redirect_id = redirect_id
+    app.redirect_uri = redirect_uri
     app.save()
     return app.client_id
 

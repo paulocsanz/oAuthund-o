@@ -31,7 +31,7 @@ class Application:
                 db.exec(
                         "UPDATE applications "
                         "SET name = %s, description = %s, redirect_uri = %s "
-                        "WHERE client_id = %s);"
+                        "WHERE client_id = %s;",
                         self.name,
                         self.description,
                         self.redirect_uri,

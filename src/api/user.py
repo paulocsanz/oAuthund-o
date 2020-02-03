@@ -9,7 +9,7 @@ def get_user(username, cookie):
     except NotAuthenticated:
         logout_session()
         raise
-    return User(username, name, photo_uri)
+    return User(name, photo_uri)
 
 def get_user_photo(cookie, id):
     return _get_user_photo(cookie, id)

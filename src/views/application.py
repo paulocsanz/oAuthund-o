@@ -31,13 +31,14 @@ def register_app_post(cookie):
 @login_required
 def edit_app(cookie):
     client_id = get_arg("client_id")
+    app = api.get_application(client_id)
     
     if client_id == "":
         raise MissingRequiredFields()
 
-    return render_template("edit_app.html",
-                           client_id=client_id,
-                           csrf_token=get_csrf_token())
+    kwargs = vars(app)
+    kwargs["csrf_token"] = get_csrf_token()
+    return render_template("edit_app.html", **kwargs)
 
 @app.route('/app/edit', methods=["POST"])
 @CSRF_protection

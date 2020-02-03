@@ -1,0 +1,19 @@
+{% extends 'menu.html' %}
+
+{% block menu %}
+<li><a href="{{url_for('home')}}">Meu Perfil</a></li>
+{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <h4>Nome (*)</h4>
+    <input type="text" name="name" value="{{name}}" />
+    <h4>Descrição</h4>
+    <input type="text" name="description" value="{{description}}" />
+    <h4>URI de redirecionamento - protocolo OAuth2 (*)</h4>
+    <input type="text" name="redirect_uri" value="{{redirect_uri}}" />
+    <input type="hidden" name="client_id" value="{{client_id}}" />
+    <input type='hidden' name='csrf_token' value='{{csrf_token}}'>
+    <input type="submit" value="Editar" />
+</form>
+{% endblock %}
