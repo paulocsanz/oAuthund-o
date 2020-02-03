@@ -10,12 +10,12 @@ def home(cookie):
     user = api.get_user(session["username"], cookie)
 
     try:
-        authorizations = api.get_authorizations(user.username)
+        authorizations = api.get_authorizations(session["username"])
     except (NotAuthorized, NoResult):
         authorizations = None
 
     try:
-        apps = api.get_apps(user.username)
+        apps = api.get_apps(session["username"])
     except NoResult:
         apps = None
     return render_template('profile.html',
