@@ -75,4 +75,3 @@ That means the client app holds the encryption key, but it can never access the 
 The ideal future is that SIGA provides that API and allows (at least) UFRJ's students to create apps integrated with their database. We can't ensure this will ever happen, the most we can is provide a solution and maybe even pressure to integrate it.
 
 But we would like to improve the protocol, maybe exploring OpenID authenticate and offering a API that can be used on the client side, keeping everything in cookie, never touching the app's server. We need your help to rethink this protocol to make it safer for the user.
-
