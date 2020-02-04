@@ -78,3 +78,10 @@ class InvalidResponseType(InvalidParameter):
 class NotAuthorized(OAuth2Error):
     error = "unauthorized_client"
     error_description = "The application was not authorized to access user's data"
+
+class CspReport(Exception):
+    error = "csp_report"
+    error_description = "Violated rules in 'Content-Security-Policy' header set in `src/common/headers.py`"
+
+    def __init__(self, body):
+        self.body = body

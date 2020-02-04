@@ -56,10 +56,6 @@ def debug(msg, *params):
 def message(msg, *params):
     _output("MESSAGE", msg, params)
 
-def request(req):
-    # Needed?
-    pass
-
 def error(err, label=None):
     try:
         raise err
@@ -75,8 +71,8 @@ def error(err, label=None):
 
     _output(_type, msg)
 
-def json(msg, _dict):
-    _output("JSON", msg, _json.dumps(_dict))
+def obj(msg, _dict):
+    _output("JSON", msg, _dict.items())
 
 def fatal(*msg):
     _output("FATAL", msg)

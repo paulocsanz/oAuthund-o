@@ -7,10 +7,14 @@ from cryptography.fernet import Fernet
 from .errors import NoDateFormat
 from hashlib import sha256
 from fake_useragent import UserAgent
+import requests
 import re
 
+SESSION_EXPIRATION = None
+
 def ConfigUtils(app):
-    global DATE_FORMAT
+    global DATE_FORMAT, SESSION_EXPIRATION
+    SESSION_EXPIRATION = app.config["SESSION_EXPIRATION"]
     DATE_FORMAT = app.config["DATE_FORMAT"]
 
     app.jinja_env.filters['length'] = len
@@ -123,14 +127,24 @@ def object_json(obj):
                         or callable(k))}
     return json_dumps(attrs)
 
+def http_get(uri, **kwargs):
+    if kwargs.get("headers") is None:
+        kwargs["headers"] = {}
+    kwargs["headers"]["User-Agent"] = get_user_agent()
+    return requests.get(uri, kwargs)
+
+def http_post(uri, **kwargs):
+    if kwargs.get("headers") is None:
+        kwargs["headers"] = {}
+    kwargs["headers"]["User-Agent"] = get_user_agent()
+    return requests.post(uri, kwargs)
+
 ua = UserAgent()
 last_ua = now_timestamp()
 
-def get_header():
+def get_user_agent():
     global ua, last_ua
     if now_timestamp() - last_ua > SESSION_EXPIRATION:
         last_ua = now_timestamp()
         ua.update()
-    print(ua)
     return ua["google chrome"]
-    

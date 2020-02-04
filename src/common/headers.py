@@ -16,6 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask import url_for, request
+from json import loads
+from .errors import CspReport
 
 class SecureHeader:
     def __init__(self, app):
@@ -37,16 +39,16 @@ class SecureHeader:
             response.headers['X-Permitted-Cross-Domain-Policies'] = 'none'
             response.headers['Content-Security-Policy'] = (
                 "default-src 'none'; "
+                "connect-src 'none'; "
                 "script-src 'none'; "
                 "worker-src 'none'; "
                 "style-src 'self'; "
                 "img-src 'self'; "
-                "connect-src 'none'; "
                 "font-src 'none'; "
                 "object-src 'none'; "
                 "media-src 'none'; "
                 "sandbox allow-forms; "
-                "report-uri '{}'; "
+                "report-uri {}; "
                 "frame-src 'none'; "
                 "form-action 'self'; "
                 "frame-ancestors 'none'; "
@@ -58,9 +60,10 @@ class SecureHeader:
         @app.route('/csp_report', methods=["POST"])
         def csp_report():
             try:
-                app.config['log'].json("CSP_REPORT", {"user_agent": request.META["HTTP_USER_AGENT"],
-                                                      "remote_addr": request.META["REMOTE_ADDR"],
-                                                      "report": request.body})
+                app.config['log'].error(CspReport({"user_agent": request.environ["HTTP_USER_AGENT"],
+                                                      "remote_addr": request.environ["REMOTE_ADDR"],
+                                                      "report": loads(request.data)}), "CSP_REPORT")
             except ValueError:
+                app.config['log'].error(CspReport(loads(request.data)), "CSP_REPORT")
                 return 'Bad Request', 400
             return 'OK', 204

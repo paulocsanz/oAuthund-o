@@ -1,20 +1,19 @@
 from bs4 import BeautifulSoup
 from werkzeug.exceptions import InternalServerError
-from requests import get, post
 from io import BytesIO
 from ..common.errors import UserNotFound, NotAuthenticated
-from ..common.utils import format_title
+from ..common.utils import format_title, http_get, http_post
 from flask import session
 
 def login(username, password):
     global session
     uri = "https://portalaluno.ufrj.br/Portal/acesso"
-    req_get = get(uri)
+    req_get = http_get(uri)
     if req_get.status_code != 200:
         raise InternalServerError(req_get.status_code)
 
     JSESSIONID = req_get.cookies["JSESSIONID"]
-    req_post = post(
+    req_post = http_post(
         uri,
         data={
             "gnosys-login-form": "gnosys-login-form", 
@@ -23,17 +22,19 @@ def login(username, password):
             "inputUsername": username,
             "inputPassword": password
         }, cookies = {
-            "JSESSIONID": JSESSIONID
+            "cookie-portalaluno": req_get.cookies["cookie-portalaluno"],
+            "JSESSIONID": req_get.cookies["JSESSIONID"]
         }
     )
     try:
         return req_post.cookies["gnosys-token"]
     except KeyError:
+        print(req_post.cookies, req_post.content.decode('utf-8'), req_post.status_code, req_post.headers)
         raise UserNotFound()
 
 def get_user(cookie):
     uri = "https://portalaluno.ufrj.br/Portal/inicial"
-    req = get(uri,cookies={"gnosys-token": cookie})
+    req = http_get(uri,cookies={"gnosys-token": cookie})
     if req.status_code != 200:
         raise InternalServerError(req.status_code)
 
@@ -52,7 +53,7 @@ def get_user(cookie):
 
 def get_user_photo(cookie, photo_id):
     uri = "https://portalaluno.ufrj.br/Portal/inicial"
-    req = get(uri,cookies={"gnosys-token": cookie})
+    req = http_get(uri,cookies={"gnosys-token": cookie})
     if req.status_code != 200:
         raise InternalServerError(req.status_code)
 
@@ -61,7 +62,7 @@ def get_user_photo(cookie, photo_id):
     if len(avatar_id_list) < 1:
         raise NotAuthenticated()
 
-    req = get("https://sigadocker.ufrj.br/fotos/" + avatar_id_list[0]["value"])
+    req = http_get("https://sigadocker.ufrj.br/fotos/" + avatar_id_list[0]["value"])
     if req.status_code != 200:
         raise InternalServerError(req.status_code)
     return BytesIO(req.content)

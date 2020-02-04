@@ -1,6 +1,9 @@
 from flask import Flask
 app = Flask(__name__)
 
+if app.config.get("FLASK_ENV") != "development":
+    app.config["SESSION_COOKIE_SECURE"] = True
+
 from .common import InitializeLib
 from .config import Config
 
